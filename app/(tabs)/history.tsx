@@ -1,0 +1,7 @@
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Clock3, MessageCircle } from 'lucide-react-native';
+
+export default function HistoryScreen() {
+  return <SafeAreaView style={styles.safe}><View style={styles.content}><View style={styles.icon}><Clock3 color="#F5C24B" size={22} /></View><Text style={styles.title}>Your questions</Text><Text style={styles.subtitle}>Recent conversations will appear here as you explore BIS standards.</Text><View style={styles.empty}><MessageCircle color="#2C8D93" size={26} /><Text style={styles.emptyTitle}>No history yet</Text><Text style={styles.emptyText}>Start with one of the suggested questions in Explore.</Text></View></View></SafeAreaView>;
+}
+const styles = StyleSheet.create({ safe: { flex: 1, backgroundColor: '#FBF8F1' }, content: { padding: 24, paddingTop: 40 }, icon: { width: 45, height: 45, borderRadius: 15, backgroundColor: '#0C2D50', alignItems: 'center', justifyContent: 'center' }, title: { color: '#0C2D50', fontSize: 28, fontWeight: '800', marginTop: 17 }, subtitle: { color: '#687681', fontSize: 14, lineHeight: 21, marginTop: 8 }, empty: { backgroundColor: '#FFFFFF', borderRadius: 22, borderColor: '#E9E4DA', borderWidth: 1, alignItems: 'center', padding: 26, marginTop: 32 }, emptyTitle: { color: '#173650', fontSize: 17, fontWeight: '800', marginTop: 12 }, emptyText: { color: '#788590', textAlign: 'center', fontSize: 13, lineHeight: 19, marginTop: 6 }, });
