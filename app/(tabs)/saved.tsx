@@ -6,8 +6,7 @@ import { supabase } from '@/lib/supabase';
 type Source = { title: string; url: string; citation: string; summary: string; category: string };
 const fallback: Source[] = [
   { title: 'Indian Standards on LED (IS 16102)', url: 'https://bis.gov.in/other/LEDSeries.pdf', citation: 'BIS LED Series · IS 16102', summary: 'Official list covering LED lamps, modules, control gear, safety and performance requirements.', category: 'LED Bulbs' },
-  { title: 'Gold Hallmarking Overview & FAQs', url: 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq?lang=en', citation: 'BIS Gold Hallmarking · HUID', summary: 'Covers gold purity standards, 6-digit HUID verification, and assaying centres.', category: 'Gold' },
-  { title: 'Silver Hallmarking Standards (IS 2112)', url: 'https://www.bis.gov.in/hallmarking-overview/silver-hallmarking/', citation: 'BIS Silver · IS 2112', summary: 'Official guidelines and fineness grades for silver jewellery and artefacts.', category: 'Silver' },
+  { title: 'Gold & Silver Hallmarking Overview & FAQs', url: 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en', citation: 'BIS Gold & Silver · HUID', summary: 'Covers gold and silver purity standards, 6-digit HUID verification, and assaying centres under IS 1417 & IS 2112.', category: 'Gold & Silver' },
   { title: 'Consumer Protection & HUID Verification', url: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en', citation: 'BIS Consumer Protection', summary: 'Consumer guidance on using the BIS CARE mobile app to verify hallmarking before buying.', category: 'Hallmarking' },
 ];
 

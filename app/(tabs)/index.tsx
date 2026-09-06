@@ -22,10 +22,12 @@ const prompts = {
   ],
 };
 
+const HALLMARKING_FAQ_URL = 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en';
+
 const localSources: Source[] = [
   { title: 'Indian Standards on LED', url: 'https://bis.gov.in/other/LEDSeries.pdf', citation: 'BIS LED Series · IS 16102', summary: 'Official list covering LED lamps, modules, control gear, measurements and luminaires.' },
-  { title: 'Gold Hallmarking FAQs & HUID', url: 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq?lang=en', citation: 'BIS Gold Hallmarking · HUID', summary: 'Confirms the three-part hallmark: BIS logo, purity/fineness and six-digit HUID.' },
-  { title: 'Silver Hallmarking Standards', url: 'https://www.bis.gov.in/hallmarking-overview/silver-hallmarking/', citation: 'BIS Silver · IS 2112', summary: 'Official guidelines and fineness grades for silver jewellery and artefacts under IS 2112.' },
+  { title: 'Gold & Silver Hallmarking FAQs & Standards', url: HALLMARKING_FAQ_URL, citation: 'BIS Gold & Silver · HUID', summary: 'Confirms the three-part hallmark: BIS logo, purity/fineness grades (IS 1417 & IS 2112) and six-digit HUID.' },
+  { title: 'Consumer Protection & HUID Verification', url: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en', citation: 'BIS Consumer Protection', summary: 'Consumer guidance on using the BIS CARE mobile app to verify hallmarking before buying.' },
 ];
 
 const roadmapSteps: RoadmapStep[] = [
@@ -163,7 +165,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'BIS हॉलमार्किंग सोने (IS 1417) और चाँदी (IS 2112) के आभूषणों व कलाकृतियों की शुद्धता प्रमाणित करती है। असली हॉलमार्क में तीन प्रमुख चिह्न होते हैं: 1) BIS लोगो, 2) शुद्धता/फाइननेस ग्रेड (जैसे सोने के लिए 22K916 और चाँदी के लिए 925 स्टर्लिंग), और 3) 6 अंकों का अल्फ़ान्यूमेरिक HUID कोड। उपभोक्ता BIS CARE मोबाइल ऐप में "Verify HUID" फीचर से आभूषण की प्रामाणिकता तुरंत जाँच सकते हैं।',
         citation: 'BIS हॉलमार्किंग · HUID',
-        sourceUrl: localSources[1].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     } else {
       return {
@@ -171,7 +173,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'BIS Hallmarking certifies the purity and fineness of Gold (IS 1417) and Silver (IS 2112) jewellery and artefacts. A genuine hallmark consists of three marks: 1) BIS Logo, 2) Purity & Fineness grade (e.g., 22K916 for gold, 925 for silver), and 3) a unique 6-digit alphanumeric HUID code. Consumers can verify hallmarked items using the "Verify HUID" feature in the official BIS CARE mobile app.',
         citation: 'BIS Hallmarking Overview · HUID',
-        sourceUrl: localSources[1].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     }
   }
@@ -184,7 +186,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'असली हॉलमार्क वाले सोने के आभूषण पर तीन अनिवार्य चिह्न होते हैं: BIS लोगो, शुद्धता या फाइननेस (जैसे 24K999, 22K916, 18K750, 14K585) और छह अंकों वाला अल्फ़ान्यूमेरिक HUID। खरीदने से पहले HUID की जाँच BIS CARE ऐप से की जा सकती है। शुद्धता की जाँच के लिए BIS से मान्यता प्राप्त Assaying & Hallmarking Centre (AHC) आभूषण की जाँच करके रिपोर्ट जारी कर सकता है।',
         citation: 'BIS स्वर्ण हॉलमार्किंग · HUID',
-        sourceUrl: localSources[1].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     } else {
       return {
@@ -192,7 +194,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'A genuine hallmarked gold article carries three mandatory marks: the BIS logo, purity or fineness grade (such as 24K999, 22K916, 18K750, 14K585), and a six-digit alphanumeric HUID. You can use the BIS CARE app to verify the HUID and jeweller details before buying. Purity testing can also be performed at any BIS-recognised Assaying & Hallmarking Centre (AHC).',
         citation: 'BIS Gold Hallmarking · HUID',
-        sourceUrl: localSources[1].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     }
   }
@@ -205,7 +207,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'भारत में चाँदी के आभूषणों और कलाकृतियों की हॉलमार्किंग भारतीय मानक IS 2112 (Silver and Silver Alloys) के तहत की जाती है। हॉलमार्क वाली चाँदी पर BIS लोगो, शुद्धता/फाइननेस ग्रेड (जैसे 999, 970, 925 स्टर्लिंग सिल्वर, 900, 835, 800) और 6 अंकों का अल्फ़ान्यूमेरिक HUID कोड अंकित होता है। यह उपभोक्ताओं को शुद्धता और मिलावट से सुरक्षा की गारंटी देता है।',
         citation: 'BIS रजत (चाँदी) · IS 2112',
-        sourceUrl: localSources[2].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     } else {
       return {
@@ -213,7 +215,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'Silver hallmarking in India is governed by Indian Standard IS 2112 (Silver and Silver Alloys, Jewellery/Artefacts). Hallmarked silver carries three marks: the BIS logo, purity/fineness grade (such as 999, 970, 925 for Sterling Silver, 900, 835, 800), and a six-digit alphanumeric HUID. This guarantees authenticity and protects buyers from adulteration.',
         citation: 'BIS Silver Hallmarking · IS 2112',
-        sourceUrl: localSources[2].url,
+        sourceUrl: HALLMARKING_FAQ_URL,
       };
     }
   }
