@@ -79,8 +79,8 @@ export default function ProfileScreen() {
           {[
             {
               cat: 'Industry: LED Lamps',
-              std: 'IS 16102 (Part 1 & 2):2012',
-              scheme: 'Compulsory Registration Scheme (CRS) · Mandatory',
+              std: 'IS 16102 (Part 1):2026 / Part 2:2012',
+              scheme: 'CRS Scheme-II via MeitY Order · Mandatory Registration',
             },
             {
               cat: 'Consumer: Gold Jewellery',

@@ -32,7 +32,7 @@ const fallback: Source[] = [
     title: 'Indian Standards on LED (IS 16102)',
     url: 'https://bis.gov.in/other/LEDSeries.pdf',
     citation: 'BIS LED Series · IS 16102',
-    summary: 'Official list covering LED lamps, modules, control gear, safety (Part 1) and performance (Part 2) requirements under the Compulsory Registration Scheme (CRS).',
+    summary: 'Official standards covering LED lamps: Safety (IS 16102 Part 1:2026, First Revision) and Performance (IS 16102 Part 2:2012). Mandatory registration is enforced via MeitY Compulsory Registration Order under CRS Scheme II.',
     category: 'LED Bulbs · CRS Scheme',
     section: 'industry',
   },

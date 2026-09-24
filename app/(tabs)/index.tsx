@@ -254,37 +254,37 @@ const localSources: Source[] = [
 // ─── Evidence Database (IS-number metadata & evidence details) ───────────────
 export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
   'IS 16102': {
-    isNumber: 'IS 16102 (Part 1 & 2):2012',
-    title: 'Self-Ballasted LED Lamps for General Lighting Services',
-    titleHi: 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप',
+    isNumber: 'IS 16102 (Part 1):2026 · IS 16102 (Part 2):2012',
+    title: 'Self-Ballasted LED Lamps for General Lighting Services (Part 1: Safety; Part 2: Performance)',
+    titleHi: 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप (Part 1: सुरक्षा; Part 2: प्रदर्शन)',
     scheme: 'Compulsory Registration Scheme (CRS)',
     schemeHi: 'अनिवार्य पंजीकरण योजना (CRS)',
     schemeType: 'CRS',
     authority: 'Bureau of Indian Standards · Electrotechnical Division',
-    year: '2012 (with amendments)',
-    scopeSummary: 'Prescribes safety requirements (Part 1: insulation resistance, electrical safety, mechanical endurance, thermal protection) and performance requirements (Part 2: wattage, luminous flux, colour temperature, life test).',
-    scopeSummaryHi: 'सुरक्षा आवश्यकताएँ (Part 1: इन्सुलेशन प्रतिरोध, विद्युत सुरक्षा, यांत्रिक स्थायित्व, तापीय सुरक्षा) और प्रदर्शन आवश्यकताएँ (Part 2: वाट क्षमता, ल्यूमेन आउटपुट, रंग तापमान, जीवनकाल) निर्धारित करता है।',
+    year: 'Part 1: 2026 (First Revision); Part 2: 2012 [Historical: Part 1:2012]',
+    scopeSummary: 'Prescribes safety requirements in Part 1:2026 (insulation resistance, electric shock protection, mechanical strength, thermal endurance) and performance requirements in Part 2:2012 (wattage, luminous flux, colour temperature, life test).',
+    scopeSummaryHi: 'Part 1:2026 में सुरक्षा आवश्यकताएँ (इन्सुलेशन प्रतिरोध, विद्युत सुरक्षा, यांत्रिक मजबूती, तापीय सहनशीलता) और Part 2:2012 में प्रदर्शन आवश्यकताएँ (वाट क्षमता, ल्यूमेन आउटपुट, रंग तापमान, जीवनकाल) निर्धारित करता है।',
     keyRequirements: [
-      'Testing at a BIS-recognized laboratory as per IS 16102 (Part 1) and (Part 2)',
+      'Testing at a BIS-recognized laboratory as per IS 16102 (Part 1):2026 and (Part 2):2012',
       'Manufacturing unit registration under BIS Compulsory Registration Scheme (CRS)',
       'Standard CRS mark with unique Registration number (R-number) on product packaging',
       'Mandatory compliance under Electronics & IT Goods (Compulsory Registration) Order',
     ],
     keyRequirementsHi: [
-      'BIS से मान्यता प्राप्त प्रयोगशाला में IS 16102 (Part 1) और (Part 2) के तहत जाँच',
+      'BIS से मान्यता प्राप्त प्रयोगशाला में IS 16102 (Part 1):2026 और (Part 2):2012 के तहत परीक्षण',
       'BIS अनिवार्य पंजीकरण योजना (CRS) के तहत निर्माण इकाई का पंजीकरण',
       'उत्पाद पैकेजिंग पर अद्वितीय पंजीकरण संख्या (R-number) के साथ मानक CRS मार्क',
       'इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश के तहत अनिवार्य अनुपालन',
     ],
     sourceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
-    sourceTitle: 'BIS LED Series Official Standards Directory',
-    verifiedDate: 'Active Gazette Reference · Bureau of Indian Standards',
-    regulatoryBasis: 'Regulated under Compulsory Registration Scheme (CRS). Implemented under Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order notified by MeitY / BIS.',
-    regulatoryBasisHi: 'अनिवार्य पंजीकरण योजना (CRS) के तहत विनियमित। इलेक्ट्रॉनिक्स व सूचना प्रौद्योगिकी वस्तु आदेश (MeitY/BIS) के तहत अनिवार्य रूप से लागू।',
-    legalOrder: 'Electronics & IT Goods (Compulsory Registration) Order · Scheme-II of BIS (Conformity Assessment) Regulations',
-    legalOrderHi: 'इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश · BIS विनियम योजना-II',
+    sourceTitle: 'BIS LED Series Official Standards Directory & BIS LIMS',
+    verifiedDate: 'Active Reference · BIS LIMS / Gazette Notification',
+    regulatoryBasis: 'Standards define technical requirements; mandatory certification is enforced separately by statutory order: Electronics & Information Technology Goods (Requirement for Compulsory Registration) Order notified by MeitY, administered under Scheme II (CRS) of BIS (Conformity Assessment) Regulations.',
+    regulatoryBasisHi: 'मानक तकनीकी आवश्यकताओं को परिभाषित करते हैं; अनिवार्य प्रमाणन अलग से वैधानिक आदेश द्वारा लागू होता है: इलेक्ट्रॉनिक्स और आईटी सामान (अनिवार्य पंजीकरण) आदेश (MeitY), जो BIS विनियमों की योजना II (CRS) के तहत प्रशासित है।',
+    legalOrder: 'MeitY Electronics & IT Goods (Compulsory Registration) Order · Scheme-II of BIS (Conformity Assessment) Regulations',
+    legalOrderHi: 'MeitY इलेक्ट्रॉनिक्स व आईटी सामान (अनिवार्य पंजीकरण) आदेश · BIS योजना-II (CRS)',
     applicabilityType: 'Mandatory',
-    applicabilityTypeHi: 'अनिवार्य (Mandatory under CRS)',
+    applicabilityTypeHi: 'MeitY आदेश द्वारा अनिवार्य (CRS)',
   },
   'IS 1417': {
     isNumber: 'IS 1417:2016',
@@ -360,31 +360,31 @@ const roadmapSteps: RoadmapStep[] = [
     number: '01',
     title: 'Identify Applicable Standard',
     titleHi: 'लागू मानक पहचानें',
-    description: 'Confirm that IS 16102 (Part 1 – Safety; Part 2 – Performance) applies to your LED lamp product.',
-    descriptionHi: 'पुष्टि करें कि IS 16102 (Part 1 – सुरक्षा; Part 2 – प्रदर्शन) आपके LED लैंप उत्पाद पर लागू होता है।',
+    description: 'Confirm that IS 16102 (Part 1:2026 – Safety; Part 2:2012 – Performance) applies to your LED lamp product.',
+    descriptionHi: 'पुष्टि करें कि IS 16102 (Part 1:2026 – सुरक्षा; Part 2:2012 – प्रदर्शन) आपके LED लैंप उत्पाद पर लागू होता है।',
     duration: '—',
-    evidenceNote: 'BIS LED Series · IS 16102',
-    evidenceNoteHi: 'BIS LED सीरीज़ · IS 16102',
+    evidenceNote: 'BIS LED Series & LIMS · IS 16102',
+    evidenceNoteHi: 'BIS LED सीरीज़ व LIMS · IS 16102',
   },
   {
     number: '02',
     title: 'Check Scheme / Regulatory Status',
     titleHi: 'योजना / विनियामक स्थिति जाँचें',
-    description: 'LED lamps fall under the Compulsory Registration Scheme (CRS). Confirm applicability for your specific product scope via the BIS portal.',
-    descriptionHi: 'LED लैंप Compulsory Registration Scheme (CRS) के अंतर्गत आते हैं। BIS पोर्टल पर अपने उत्पाद की स्कोप की पुष्टि करें।',
+    description: 'LED lamps fall under the Compulsory Registration Scheme (CRS) via MeitY statutory order. Confirm scope applicability for your specific product rating via the BIS portal.',
+    descriptionHi: 'MeitY वैधानिक आदेश के तहत LED लैंप Compulsory Registration Scheme (CRS) में आते हैं। BIS पोर्टल पर अपने उत्पाद की स्कोप पुष्टि करें।',
     duration: '—',
-    evidenceNote: 'BIS Product Certification Portal',
-    evidenceNoteHi: 'BIS उत्पाद प्रमाणन पोर्टल',
+    evidenceNote: 'MeitY CRO & BIS Product Certification Portal',
+    evidenceNoteHi: 'MeitY CRO व BIS उत्पाद प्रमाणन पोर्टल',
   },
   {
     number: '03',
     title: 'Product Testing at BIS Laboratory',
     titleHi: 'BIS प्रयोगशाला में उत्पाद परीक्षण',
-    description: 'Test at a BIS-recognised laboratory as per IS 16102 (Part 1) for safety and IS 16102 (Part 2) for performance.',
-    descriptionHi: 'BIS से मान्यता प्राप्त प्रयोगशाला में IS 16102 (Part 1) सुरक्षा और IS 16102 (Part 2) प्रदर्शन के अनुसार जाँच करें।',
+    description: 'Test at a BIS-recognised laboratory as per IS 16102 (Part 1):2026 for safety and IS 16102 (Part 2):2012 for performance.',
+    descriptionHi: 'BIS से मान्यता प्राप्त प्रयोगशाला में IS 16102 (Part 1):2026 सुरक्षा और IS 16102 (Part 2):2012 प्रदर्शन के अनुसार जाँच करें।',
     duration: '10–15 working days*',
-    evidenceNote: 'IS 16102 (Part 1):2012 & (Part 2):2012 · * Indicative only; confirm with your lab',
-    evidenceNoteHi: 'IS 16102 (Part 1):2012 & (Part 2):2012 · * अनुमानित; अपनी प्रयोगशाला से पुष्टि करें',
+    evidenceNote: 'IS 16102 (Part 1):2026 & (Part 2):2012 · * Indicative only; confirm with your lab',
+    evidenceNoteHi: 'IS 16102 (Part 1):2026 & (Part 2):2012 · * अनुमानित; अपनी प्रयोगशाला से पुष्टि करें',
   },
   {
     number: '04',
@@ -823,11 +823,11 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
   // 4. LED Lamp Category (IS 16102)
   if (classification.scope === 'LED') {
     if (answerLang === 'Hindi') {
-      let hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप भारतीय मानक IS 16102 के अंतर्गत आते हैं। इसके दो मुख्य भाग हैं: IS 16102 (Part 1):2012 सुरक्षा आवश्यकताओं (इन्सुलेशन प्रतिरोध, विद्युत सुरक्षा, तापीय सुरक्षा) के लिए और IS 16102 (Part 2):2012 प्रदर्शन आवश्यकताओं (वाट क्षमता, ल्यूमेन आउटपुट, रंग तापमान, जीवनकाल) के लिए। यह अनिवार्य पंजीकरण योजना (CRS) के अंतर्गत आता है।';
+      let hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप भारतीय मानक IS 16102 के अंतर्गत आते हैं। वर्तमान आधिकारिक BIS LIMS रिकॉर्ड के अनुसार सुरक्षा आवश्यकताओं के लिए लागू मानक IS 16102 (Part 1):2026 (प्रथम संशोधन, 2012 संस्करण का स्थान लेते हुए) और प्रदर्शन आवश्यकताओं के लिए IS 16102 (Part 2):2012 है। विनियामक अंतर: भारतीय मानक तकनीकी विनिर्देश हैं; इस उत्पाद के लिए पंजीकरण MeitY के अनिवार्य पंजीकरण आदेश के तहत CRS योजना-II के माध्यम से वैधानिक रूप से अनिवार्य किया गया है।';
       if (classification.intent === 'ROADMAP_REQUEST') {
-        hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप का BIS CRS प्रमाणन 5 प्रमुख चरणों का पालन करता है: 1) लागू मानक पहचान (IS 16102), 2) CRS योजना सत्यापन, 3) BIS प्रयोगशाला परीक्षण (सुरक्षा Part 1 व प्रदर्शन Part 2), 4) दस्तावेज़ तैयारी, और 5) ऑनलाइन पंजीकरण व R-number प्राप्ति। पूरा रोडमैप देखने के लिए नीचे का बटन दबाएँ।';
+        hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप का BIS CRS अनुपालन मार्ग 5 प्रमुख चरणों का पालन करता है: 1) लागू मानक पहचान (IS 16102 Part 1:2026 व Part 2:2012), 2) MeitY विनियामक आदेश व CRS योजना सत्यापन, 3) मान्यता प्राप्त लैब में उत्पाद परीक्षण, 4) दस्तावेज़ तैयारी, और 5) BIS CRS पोर्टल पर ऑनलाइन पंजीकरण व R-number प्राप्ति। पूरा रोडमैप देखने के लिए नीचे का बटन दबाएँ।';
       } else if (classification.intent === 'REQUIREMENT_CHECK') {
-        hiAnswer = 'हाँ, इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश के तहत सेल्फ-बैलेस्टेड LED लैंप के लिए BIS CRS पंजीकरण अनिवार्य है। निर्माताओं को IS 16102 (Part 1):2012 के तहत विद्युत सुरक्षा और IS 16102 (Part 2):2012 के तहत प्रदर्शन के लिए BIS मान्यता प्राप्त लैब में परीक्षण कराकर BIS CRS पोर्टल पर पंजीकरण कराना और पैकेजिंग पर R-number लगाना अनिवार्य है।';
+        hiAnswer = 'हाँ, सेल्फ-बैलेस्टेड LED लैंप के लिए BIS पंजीकरण अनिवार्य है। ध्यान दें कि कोई भारतीय मानक स्वतः प्रमाणन को अनिवार्य नहीं बनाता; यह अनिवार्यता MeitY द्वारा अधिसूचित इलेक्ट्रॉनिक्स व सूचना प्रौद्योगिकी सामान (अनिवार्य पंजीकरण की आवश्यकता) आदेश द्वारा कानूनी रूप से लागू की गई है। निर्माताओं को IS 16102 (Part 1):2026 (सुरक्षा) और IS 16102 (Part 2):2012 (प्रदर्शन) के तहत मान्यता प्राप्त लैब में परीक्षण कराकर BIS CRS पोर्टल पर R-number प्राप्त करना अनिवार्य है।';
       }
 
       return {
@@ -835,8 +835,8 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'सेल्फ-बैलेस्टेड LED लैंप को CRS के अंतर्गत BIS पंजीकरण की आवश्यकता होती है।',
         answerText: hiAnswer,
-        evidenceTitle: 'BIS LED सीरीज़ — आधिकारिक मानक सूची',
-        evidenceIsNumber: 'IS 16102 (Part 1):2012 · IS 16102 (Part 2):2012',
+        evidenceTitle: 'BIS LED सीरीज़ व LIMS — आधिकारिक मानक सूची',
+        evidenceIsNumber: 'IS 16102 (Part 1):2026 · IS 16102 (Part 2):2012',
         evidenceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
         evidenceDetail: EVIDENCE_DATABASE['IS 16102'],
         nextStep: 'पंजीकरण से पहले उत्पाद की जाँच BIS से मान्यता प्राप्त प्रयोगशाला में की जाती है। प्रमाणन रोडमैप देखने के लिए नीचे का बटन दबाएँ।',
@@ -852,11 +852,11 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       };
     }
 
-    let enAnswer = 'Self-ballasted LED lamps for general lighting services are governed by Indian Standard IS 16102. It comprises two complementary parts: IS 16102 (Part 1):2012 covering Safety Requirements (insulation resistance, electric shock protection, mechanical strength) and IS 16102 (Part 2):2012 covering Performance Requirements (wattage, luminous flux, colour temperature, life test). LED lamps fall under the Compulsory Registration Scheme (CRS).';
+    let enAnswer = 'Self-ballasted LED lamps for general lighting services are governed by Indian Standard IS 16102. Under current official BIS LIMS records, the applicable standard for Safety Requirements is IS 16102 (Part 1):2026 (First Revision, superseding the 2012 initial edition), while Performance Requirements are covered under IS 16102 (Part 2):2012. Regulatory distinction: Indian Standards define technical specifications, whereas mandatory registration is enforced separately via statutory order (MeitY Compulsory Registration Order under Scheme II / CRS).';
     if (classification.intent === 'ROADMAP_REQUEST') {
-      enAnswer = 'The BIS certification journey for self-ballasted LED lamps under the Compulsory Registration Scheme (CRS) follows a structured 5-stage roadmap: 1) Identify Applicable Standard (IS 16102), 2) Check CRS Scheme Applicability, 3) Sample Testing at BIS-Recognized Lab (Safety & Performance), 4) Prepare Application & Technical Documents, and 5) Portal Submission & R-number Grant. Click "View Certification Roadmap" below to explore each milestone.';
+      enAnswer = 'The BIS compliance pathway for self-ballasted LED lamps under the Compulsory Registration Scheme (CRS) follows a structured 5-stage roadmap: 1) Identify Applicable Standard (IS 16102 Part 1:2026 & Part 2:2012), 2) Check Statutory Order & CRS Applicability, 3) Sample Testing at BIS-Recognized Lab (Safety & Performance), 4) Prepare Application & Technical Documents, and 5) Portal Submission & R-number Grant. Click "View Certification Roadmap" below to explore each milestone.';
     } else if (classification.intent === 'REQUIREMENT_CHECK') {
-      enAnswer = 'Yes, self-ballasted LED lamps have mandatory BIS registration requirements under the Compulsory Registration Scheme (CRS). Under the Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order, manufacturers must test lamps at a BIS-recognized laboratory against IS 16102 (Part 1):2012 for electrical safety and IS 16102 (Part 2):2012 for performance parameters, followed by registration on the BIS CRS portal to obtain a valid R-number before sale in India.';
+      enAnswer = 'Yes, self-ballasted LED lamps require mandatory BIS registration. Importantly, an Indian Standard does not inherently make certification mandatory on its own; mandatory status is enforced separately by a statutory order — specifically the Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order notified by MeitY. Under this order, lamps must be tested at a BIS-recognized laboratory against IS 16102 (Part 1):2026 for electrical safety and IS 16102 (Part 2):2012 for performance parameters, followed by registration on the BIS CRS portal to obtain a valid R-number before sale in India.';
     }
 
     return {
@@ -864,11 +864,11 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       role: 'assistant',
       text: 'Self-ballasted LED lamps require BIS registration under CRS.',
       answerText: enAnswer,
-      evidenceTitle: 'BIS LED Series — Official Standards List',
-      evidenceIsNumber: 'IS 16102 (Part 1):2012 · IS 16102 (Part 2):2012',
+      evidenceTitle: 'BIS LED Series & LIMS — Official Standards List',
+      evidenceIsNumber: 'IS 16102 (Part 1):2026 · IS 16102 (Part 2):2012',
       evidenceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
       evidenceDetail: EVIDENCE_DATABASE['IS 16102'],
-      nextStep: 'View the step-by-step certification roadmap for LED lamps, or proceed to the official BIS CRS portal to start your application.',
+      nextStep: 'View the step-by-step compliance roadmap for LED lamps, or proceed to the official BIS CRS portal to start your application.',
       nextStepUrl: BIS_CARE_URL,
       followUps: [
         'What testing is required under IS 16102?',

@@ -30,7 +30,7 @@ const DEMO_QUERIES: DemoQuery[] = [
     query: 'Which BIS standard applies to LED bulbs?',
     category: 'industry',
     categoryLabel: 'Industry · Standard Discovery',
-    description: 'Returns IS 16102 (Part 1 & 2):2012, CRS scheme, and lab testing parameters.',
+    description: 'Returns IS 16102 (Part 1):2026 & (Part 2):2012, CRS scheme, and lab testing parameters.',
   },
   {
     query: 'Is BIS certification required for LED lamps?',

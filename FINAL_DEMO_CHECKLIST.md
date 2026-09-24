@@ -26,8 +26,8 @@
    - *Key Talking Point*: *"Every response breaks down into Answer → Official Evidence → Next Actionable Step."*
 3. **Action**: Tap **`[Review Citation & Scope]`** on the Evidence Card.
    - **Showcase the Dual-Panel Evidence Drawer**:
-     - **Panel 1 (Technical Specification)**: Points to IS 16102 (Part 1):2012, testing parameters.
-     - **Panel 2 (Regulatory Legal Basis)**: Points to MeitY Electronics and IT Goods Order, 2012, CRS Scheme II.
+     - **Panel 1 (Technical Specification)**: Points to IS 16102 (Part 1):2026 (Safety, First Revision) & Part 2:2012 (Performance).
+     - **Panel 2 (Regulatory Legal Basis)**: Points to MeitY Electronics and IT Goods (Compulsory Registration) Order, CRS Scheme II.
    - *Key Talking Point*: *"Generic AI confuses a voluntary technical standard with a mandatory legal requirement. SahayakBIS clearly isolates the standard from the statutory order that enforces it."*
 4. **Action**: Tap **`LED 5-Step Compliance Roadmap`** (or Next Step link).
    - **Showcase the 5-Stage Interactive Roadmap**:
