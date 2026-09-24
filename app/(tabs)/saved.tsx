@@ -18,7 +18,14 @@ const C = {
   amberDark: '#9D6E00',
 };
 
-type Source = { title: string; url: string; citation: string; summary: string; category: string };
+type Source = {
+  title: string;
+  url: string;
+  citation: string;
+  summary: string;
+  category: string;
+  section: 'industry' | 'consumer';
+};
 
 const fallback: Source[] = [
   {
@@ -26,28 +33,32 @@ const fallback: Source[] = [
     url: 'https://bis.gov.in/other/LEDSeries.pdf',
     citation: 'BIS LED Series · IS 16102',
     summary: 'Official list covering LED lamps, modules, control gear, safety (Part 1) and performance (Part 2) requirements under the Compulsory Registration Scheme (CRS).',
-    category: 'LED Bulbs · CRS',
+    category: 'LED Bulbs · CRS Scheme',
+    section: 'industry',
   },
   {
-    title: 'Gold & Silver Hallmarking FAQs',
-    url: 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en',
-    citation: 'BIS Gold & Silver · HUID',
-    summary: 'Covers gold (IS 1417) and silver (IS 2112) purity standards, 6-digit HUID verification, fineness grades and assaying centres.',
-    category: 'Hallmarking · IS 1417 & IS 2112',
-  },
-  {
-    title: 'Consumer Protection & HUID Verification',
-    url: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
-    citation: 'BIS Consumer Protection',
-    summary: 'Official guidance on using BIS CARE mobile app to verify hallmarked gold and silver jewellery by HUID before buying.',
-    category: 'Consumer · BIS CARE',
-  },
-  {
-    title: 'BIS Product Certification Portal',
+    title: 'BIS Product Certification & CRS Portal',
     url: 'https://www.bis.gov.in/product-certification/online-information/',
     citation: 'BIS Product Certification',
-    summary: 'BIS information for manufacturers and applicants about product certification, CRS registration and online services.',
-    category: 'Certification · Manufacturers',
+    summary: 'BIS official portal for manufacturers and applicants for Compulsory Registration Scheme (CRS), laboratory testing guidelines, and registration grant.',
+    category: 'Industry Certification · Manufacturers',
+    section: 'industry',
+  },
+  {
+    title: 'Gold & Silver Hallmarking FAQs (IS 1417 & IS 2112)',
+    url: 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en',
+    citation: 'BIS Gold & Silver · HUID',
+    summary: 'Covers gold (IS 1417) and silver (IS 2112) purity standards, 6-digit HUID verification, fineness grades and registered Assaying & Hallmarking Centres (AHCs).',
+    category: 'Hallmarking · IS 1417 & IS 2112',
+    section: 'consumer',
+  },
+  {
+    title: 'Consumer Protection & BIS CARE HUID Lookup',
+    url: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+    citation: 'BIS Consumer Protection · BIS CARE',
+    summary: 'Official guidance on using the official BIS CARE mobile app to verify 6-digit HUID codes on gold and silver articles before purchasing.',
+    category: 'Consumer Guidance · BIS CARE App',
+    section: 'consumer',
   },
 ];
 
@@ -61,9 +72,19 @@ export default function SourcesScreen() {
         .from('sahayakbis_sources')
         .select('title,url,citation,summary,category')
         .order('created_at');
-      if (data?.length) setSources(data as Source[]);
+      if (data?.length) {
+        setSources(
+          data.map((d: any) => ({
+            ...d,
+            section: d.title.toLowerCase().includes('led') || d.title.toLowerCase().includes('certification') ? 'industry' : 'consumer',
+          }))
+        );
+      }
     })();
   }, []);
+
+  const industrySources = sources.filter((s) => s.section === 'industry');
+  const consumerSources = sources.filter((s) => s.section === 'consumer');
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -80,20 +101,25 @@ export default function SourcesScreen() {
         </View>
 
         <Text style={styles.intro}>
-          Every answer in SahayakBIS is tied to an official BIS reference below.
-          SahayakBIS is a guidance tool — BIS remains the authority.
+          Every factual answer in SahayakBIS is tied directly to the official BIS references below.
+          SahayakBIS provides guidance; BIS remains the sole certification authority.
         </Text>
 
         {/* Evidence Gate notice */}
         <View style={styles.evidenceNotice}>
-          <ShieldCheck color={C.primaryDark} size={14} />
+          <ShieldCheck color={C.primaryDark} size={15} />
           <Text style={styles.evidenceNoticeText}>
-            Evidence Gate: answers are only provided when verified BIS evidence exists. No evidence → safe abstention.
+            Evidence Gate Grounding: Answers are provided only when verified BIS evidence exists.
+            No verified evidence → safe abstention.
           </Text>
         </View>
 
-        {/* Source cards */}
-        {sources.map((source) => (
+        {/* Industry Section */}
+        <View style={styles.sectionHeaderRow}>
+          <View style={[styles.sectionDot, { backgroundColor: C.primary }]} />
+          <Text style={styles.sectionHeaderText}>INDUSTRY COMPLIANCE & STANDARDS</Text>
+        </View>
+        {industrySources.map((source) => (
           <Pressable
             key={source.url}
             onPress={() => Linking.openURL(source.url)}
@@ -118,6 +144,36 @@ export default function SourcesScreen() {
           </Pressable>
         ))}
 
+        {/* Consumer Section */}
+        <View style={[styles.sectionHeaderRow, { marginTop: 14 }]}>
+          <View style={[styles.sectionDot, { backgroundColor: C.amberDark }]} />
+          <Text style={[styles.sectionHeaderText, { color: C.amberDark }]}>CONSUMER PROTECTION & HALLMARKING</Text>
+        </View>
+        {consumerSources.map((source) => (
+          <Pressable
+            key={source.url}
+            onPress={() => Linking.openURL(source.url)}
+            style={[styles.card, styles.cardConsumer]}
+            accessibilityRole="link"
+            accessibilityLabel={`Open ${source.title}`}
+          >
+            <View style={styles.cardTop}>
+              <View style={[styles.file, styles.fileConsumer]}>
+                <FileText color={C.amberDark} size={18} />
+              </View>
+              <View style={styles.cardCopy}>
+                <Text style={[styles.category, { color: C.amberDark }]}>{source.category}</Text>
+                <Text style={styles.cardTitle}>{source.title}</Text>
+              </View>
+              <ExternalLink color="#89919B" size={16} />
+            </View>
+            <Text style={styles.summary}>{source.summary}</Text>
+            <View style={styles.citationRow}>
+              <Text style={styles.citation}>{source.citation}</Text>
+            </View>
+          </Pressable>
+        ))}
+
         {/* Official BIS link */}
         <Pressable
           onPress={() => Linking.openURL('https://www.bis.gov.in/')}
@@ -130,9 +186,9 @@ export default function SourcesScreen() {
         </Pressable>
 
         <Text style={styles.disclaimer}>
-          SahayakBIS is a guidance tool for Indian Standards and BIS services.
+          SahayakBIS is an evidence-grounded guidance companion for Indian Standards and BIS services.
           It is not a certification authority, approval engine or replacement for BIS Care.
-          Always verify with BIS directly.
+          Always verify with BIS directly before making compliance decisions.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -176,6 +232,24 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     fontWeight: '600',
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+    marginTop: 6,
+  },
+  sectionDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  sectionHeaderText: {
+    color: C.navy,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+  },
   card: {
     backgroundColor: C.bg,
     borderColor: C.border,
@@ -189,6 +263,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
+  cardConsumer: {
+    borderColor: '#E8D6A7',
+    backgroundColor: '#FCFAF6',
+  },
   cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   file: {
     width: 36,
@@ -197,6 +275,9 @@ const styles = StyleSheet.create({
     backgroundColor: C.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  fileConsumer: {
+    backgroundColor: '#FFF5DC',
   },
   cardCopy: { flex: 1 },
   category: {

@@ -72,6 +72,13 @@ export type EvidenceDetail = {
   sourceUrl: string;
   sourceTitle: string;
   verifiedDate: string;
+  // Regulatory Basis & Legal Reference (Panel 2)
+  regulatoryBasis: string;
+  regulatoryBasisHi: string;
+  legalOrder: string;
+  legalOrderHi: string;
+  applicabilityType: 'Mandatory' | 'Voluntary';
+  applicabilityTypeHi: string;
 };
 
 type ChatMessage = {
@@ -125,40 +132,71 @@ const LOADING_STAGES = {
   ],
 };
 
-// ─── Intent Buttons (design.md §Main Screen) ─────────────────────────────────
-type IntentDef = { id: Intent; label: string; labelHi: string; icon: any; query: string; queryHi: string };
+// ─── Intent Buttons & Pilot Demonstrations (Industry & Consumer) ────────────
+type IntentDef = {
+  id: string;
+  category: 'Industry' | 'Consumer';
+  label: string;
+  labelHi: string;
+  icon: any;
+  query: string;
+  queryHi: string;
+};
+
 const INTENTS: IntentDef[] = [
   {
-    id: 'find',
-    label: 'Find Standard',
-    labelHi: 'मानक खोजें',
+    id: 'find_led',
+    category: 'Industry',
+    label: 'LED Standard',
+    labelHi: 'LED मानक',
     icon: FileSearch,
     query: 'Which BIS standard applies to LED bulbs?',
     queryHi: 'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
   },
   {
-    id: 'requirement',
-    label: 'BIS Requirement',
-    labelHi: 'BIS आवश्यकता',
+    id: 'req_led',
+    category: 'Industry',
+    label: 'CRS Requirement',
+    labelHi: 'CRS आवश्यकता',
     icon: ShieldCheck,
     query: 'What is the BIS certification requirement for LED lamps?',
     queryHi: 'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
   },
   {
-    id: 'roadmap',
-    label: 'Roadmap',
-    labelHi: 'रोडमैप',
+    id: 'roadmap_led',
+    category: 'Industry',
+    label: 'LED Roadmap',
+    labelHi: 'LED रोडमैप',
     icon: Sparkles,
-    query: 'LED bulb BIS certification roadmap',
+    query: 'Show me the BIS compliance roadmap for LED lamps.',
     queryHi: 'LED बल्ब BIS प्रमाणन रोडमैप',
   },
   {
-    id: 'verify',
-    label: 'Verify / Understand',
-    labelHi: 'सत्यापित करें',
+    id: 'verify_gold',
+    category: 'Consumer',
+    label: 'Gold & HUID',
+    labelHi: 'सोना व HUID',
     icon: BadgeCheck,
-    query: 'How do I verify gold hallmarking & HUID?',
+    query: 'How do I verify a 6-digit HUID on gold jewellery?',
     queryHi: 'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+  },
+  {
+    id: 'silver_std',
+    category: 'Consumer',
+    label: 'Silver (IS 2112)',
+    labelHi: 'चाँदी मानक',
+    icon: BookOpen,
+    query: 'What are the silver hallmarking standards (IS 2112)?',
+    queryHi: 'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+  },
+  {
+    id: 'fineness_explain',
+    category: 'Consumer',
+    label: 'What is 22K916?',
+    labelHi: '22K916 क्या है?',
+    icon: Zap,
+    query: 'What does 22K916 mean?',
+    queryHi: '22K916 का क्या मतलब है?',
   },
 ];
 
@@ -166,10 +204,13 @@ const INTENTS: IntentDef[] = [
 const prompts = {
   English: [
     'Which BIS standard applies to LED bulbs?',
-    'What is the BIS certification requirement for LED lamps?',
-    'LED bulb BIS certification roadmap',
-    'How do I verify gold hallmarking & HUID?',
+    'Is BIS certification required for LED lamps?',
+    'Show me the BIS compliance roadmap for LED lamps.',
+    'How do I verify a 6-digit HUID on gold jewellery?',
+    'What does 22K916 mean?',
     'What are the silver hallmarking standards (IS 2112)?',
+    'Can you guarantee that my product is BIS compliant?',
+    'I make electric blankets, what BIS standard applies?',
     'What is the stock price of Apple?',
   ],
   Hindi: [
@@ -177,7 +218,9 @@ const prompts = {
     'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
     'LED बल्ब BIS प्रमाणन रोडमैप',
     'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+    '22K916 का क्या मतलब है?',
     'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+    'क्या आप गारंटी दे सकते हैं कि मेरा उत्पाद पास हो जाएगा?',
     'आज का मौसम कैसा रहेगा?',
   ],
 };
@@ -236,6 +279,12 @@ export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
     sourceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
     sourceTitle: 'BIS LED Series Official Standards Directory',
     verifiedDate: 'Active Gazette Reference · Bureau of Indian Standards',
+    regulatoryBasis: 'Regulated under Compulsory Registration Scheme (CRS). Implemented under Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order notified by MeitY / BIS.',
+    regulatoryBasisHi: 'अनिवार्य पंजीकरण योजना (CRS) के तहत विनियमित। इलेक्ट्रॉनिक्स व सूचना प्रौद्योगिकी वस्तु आदेश (MeitY/BIS) के तहत अनिवार्य रूप से लागू।',
+    legalOrder: 'Electronics & IT Goods (Compulsory Registration) Order · Scheme-II of BIS (Conformity Assessment) Regulations',
+    legalOrderHi: 'इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश · BIS विनियम योजना-II',
+    applicabilityType: 'Mandatory',
+    applicabilityTypeHi: 'अनिवार्य (Mandatory under CRS)',
   },
   'IS 1417': {
     isNumber: 'IS 1417:2016',
@@ -263,6 +312,12 @@ export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
     sourceUrl: HALLMARKING_FAQ_URL,
     sourceTitle: 'BIS Hallmarking FAQs & Regulations',
     verifiedDate: 'Active Gazette Reference · Bureau of Indian Standards',
+    regulatoryBasis: 'Mandatory Hallmarking regime under the Quality Control Order (QCO) issued by the Ministry of Consumer Affairs, Food & Public Distribution. Notified across designated districts in India.',
+    regulatoryBasisHi: 'उपभोक्ता मामले, खाद्य और सार्वजनिक वितरण मंत्रालय द्वारा जारी गुणवत्ता नियंत्रण आदेश (QCO) के तहत अधिसूचित जिलों में अनिवार्य हॉलमार्किंग।',
+    legalOrder: 'Hallmarking Quality Control Order (QCO) · Section 16 & Section 25 of BIS Act, 2016',
+    legalOrderHi: 'हॉलमार्किंग गुणवत्ता नियंत्रण आदेश (QCO) · BIS अधिनियम 2016 की धारा 16 व 25',
+    applicabilityType: 'Mandatory',
+    applicabilityTypeHi: 'अनिवार्य (Mandatory in notified districts)',
   },
   'IS 2112': {
     isNumber: 'IS 2112:2014',
@@ -278,18 +333,24 @@ export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
     keyRequirements: [
       'Voluntary scheme for jewellers and manufacturers under BIS Hallmarking Scheme',
       'Compliant articles receive BIS logo, purity fineness number, and 6-digit HUID',
-      'Protects consumers against silver adulteration and substandard alloy compositions',
+      'Protects consumers against silver adulteration and provides third-party purity assurance',
       'Verification via BIS CARE App and registered Assaying & Hallmarking Centres',
     ],
     keyRequirementsHi: [
       'BIS हॉलमार्किंग के तहत जौहरियों और निर्माताओं के लिए स्वैच्छिक योजना',
       'अनुपालन करने वाली वस्तुओं को BIS लोगो, शुद्धता संख्या और 6-अंकीय HUID मिलता है',
-      'उपभोक्ताओं को चाँदी में मिलावट और घटिया मिश्र धातु से सुरक्षा प्रदान करता है',
+      'उपभोक्ताओं को चाँदी में मिलावट से सुरक्षा और तृतीय-पक्ष शुद्धता आश्वासन देता है',
       'BIS CARE ऐप और पंजीकृत परख केंद्रों (AHC) के माध्यम से सत्यापन',
     ],
     sourceUrl: HALLMARKING_FAQ_URL,
     sourceTitle: 'BIS Silver Hallmarking Standards Directory',
     verifiedDate: 'Active Gazette Reference · Bureau of Indian Standards',
+    regulatoryBasis: 'Administered under the BIS Hallmarking Scheme as a voluntary purity assurance standard. Jewellers may register to hallmark silver articles to provide official third-party purity assurance.',
+    regulatoryBasisHi: 'स्वैच्छिक शुद्धता आश्वासन मानक के रूप में BIS हॉलमार्किंग योजना के तहत प्रशासित। जौहरी आधिकारिक तृतीय-पक्ष शुद्धता आश्वासन के लिए पंजीकरण कर सकते हैं।',
+    legalOrder: 'BIS (Hallmarking) Regulations · Voluntary Conformity Assessment Scheme',
+    legalOrderHi: 'BIS (हॉलमार्किंग) विनियम · स्वैच्छिक अनुरूपता मूल्यांकन योजना',
+    applicabilityType: 'Voluntary',
+    applicabilityTypeHi: 'स्वैच्छिक (Voluntary Scheme)',
   },
 };
 
@@ -415,11 +476,215 @@ function classifyQueryLanguage(text: string): 'Hindi' | 'English' | 'Hinglish' {
   return 'English';
 }
 
-// ─── Answer Engine (logic preserved; structured fields added) ─────────────────
+// ─── Query Taxonomy & Classification ─────────────────────────────────────────
+type ProductScope = 'LED' | 'GOLD' | 'SILVER' | 'UNKNOWN_PRODUCT' | 'NONE';
+type UserIntent =
+  | 'DISCOVER_STANDARD'
+  | 'REQUIREMENT_CHECK'
+  | 'ROADMAP_REQUEST'
+  | 'VERIFY_HALLMARK_HUID'
+  | 'EXPLAIN_FINENESS'
+  | 'ADVERSARIAL_GUARANTEE'
+  | 'UNKNOWN_PRODUCT_QUERY'
+  | 'OUT_OF_SCOPE';
+
+interface QueryClassification {
+  scope: ProductScope;
+  intent: UserIntent;
+  unknownProductTerm?: string;
+}
+
+function classifyUserQuery(question: string): QueryClassification {
+  const norm = question.toLowerCase();
+
+  // 1. Adversarial / Guarantee Demands / Direct Certification Claims
+  const isAdversarial =
+    norm.includes('guarantee') ||
+    norm.includes('warranty') ||
+    norm.includes('will my product pass') ||
+    norm.includes('can you certify') ||
+    norm.includes('certify my') ||
+    norm.includes('certify our') ||
+    norm.includes('issue certificate') ||
+    norm.includes('give me certificate') ||
+    norm.includes('100% compliant') ||
+    norm.includes('zero risk') ||
+    question.includes('गारंटी') ||
+    question.includes('वारंटी') ||
+    question.includes('सर्टिफिकेट दें') ||
+    question.includes('पास होने की गारंटी') ||
+    question.includes('प्रमाणपत्र जारी');
+
+  if (isAdversarial) {
+    return { scope: 'NONE', intent: 'ADVERSARIAL_GUARANTEE' };
+  }
+
+  // 2. Unknown Product Query (out of pilot scope)
+  const unknownProducts = [
+    { en: 'electric blanket', hi: 'इलेक्ट्रिक कंबल' },
+    { en: 'blanket', hi: 'कंबल' },
+    { en: 'cement', hi: 'सीमेंट' },
+    { en: 'solar panel', hi: 'सोलर पैनल' },
+    { en: 'solar', hi: 'सौर' },
+    { en: 'steel', hi: 'स्टील' },
+    { en: 'iron', hi: 'लोहा' },
+    { en: 'helmet', hi: 'हेलमेट' },
+    { en: 'plywood', hi: 'प्लाईवुड' },
+    { en: 'water bottle', hi: 'पानी की बोतल' },
+    { en: 'packaged water', hi: 'पैकेज्ड पानी' },
+    { en: 'toy', hi: 'खिलौना' },
+    { en: 'toys', hi: 'खिलौने' },
+    { en: 'battery', hi: 'बैटरी' },
+    { en: 'medical device', hi: 'चिकित्सा उपकरण' },
+    { en: 'fire extinguisher', hi: 'अग्निशामक' },
+    { en: 'cable', hi: 'तार' },
+    { en: 'cables', hi: 'केबल' },
+    { en: 'shoe', hi: 'जूता' },
+    { en: 'shoes', hi: 'जूते' },
+    { en: 'footwear', hi: 'फुटवियर' },
+    { en: 'tyre', hi: 'टायर' },
+    { en: 'tyres', hi: 'टायर्स' },
+    { en: 'pvc pipe', hi: 'पाइप' },
+    { en: 'air conditioner', hi: 'एसी' },
+    { en: 'refrigerator', hi: 'फ्रिज' },
+  ];
+
+  for (const item of unknownProducts) {
+    if (norm.includes(item.en) || question.includes(item.hi)) {
+      return { scope: 'UNKNOWN_PRODUCT', intent: 'UNKNOWN_PRODUCT_QUERY', unknownProductTerm: item.en };
+    }
+  }
+
+  // 3. Product Scope Detection
+  let scope: ProductScope = 'NONE';
+  const hasLed =
+    norm.includes('led') ||
+    norm.includes('bulb') ||
+    norm.includes('lamp') ||
+    norm.includes('16102') ||
+    norm.includes('lighting') ||
+    norm.includes('luminaire') ||
+    question.includes('बल्ब') ||
+    question.includes('एलईडी') ||
+    question.includes('लैंप');
+
+  const hasGold =
+    norm.includes('gold') ||
+    norm.includes('24k') ||
+    norm.includes('22k') ||
+    norm.includes('18k') ||
+    norm.includes('14k') ||
+    norm.includes('karat') ||
+    norm.includes('carat') ||
+    norm.includes('1417') ||
+    question.includes('सोना') ||
+    question.includes('सोने') ||
+    question.includes('स्वर्ण');
+
+  const hasSilver =
+    norm.includes('silver') ||
+    norm.includes('2112') ||
+    norm.includes('sterling') ||
+    question.includes('चाँदी') ||
+    question.includes('चांदी') ||
+    question.includes('रजत');
+
+  const hasHallmarkTerm =
+    norm.includes('hallmark') ||
+    norm.includes('huid') ||
+    question.includes('हॉलमार्क') ||
+    question.includes('हॉलमार्किंग');
+
+  if (hasLed) {
+    scope = 'LED';
+  } else if (hasGold && !hasSilver) {
+    scope = 'GOLD';
+  } else if (hasSilver && !hasGold) {
+    scope = 'SILVER';
+  } else if (hasGold && hasSilver) {
+    scope = 'GOLD';
+  } else if (hasHallmarkTerm) {
+    scope = 'GOLD';
+  }
+
+  if (scope === 'NONE') {
+    return { scope: 'NONE', intent: 'OUT_OF_SCOPE' };
+  }
+
+  // 4. Intent Detection within Scope
+  const isRoadmap =
+    norm.includes('roadmap') ||
+    norm.includes('step') ||
+    norm.includes('milestone') ||
+    norm.includes('process') ||
+    norm.includes('procedure') ||
+    norm.includes('timeline') ||
+    norm.includes('how to get certified') ||
+    norm.includes('how to apply') ||
+    question.includes('रोडमैप') ||
+    question.includes('चरण') ||
+    question.includes('प्रक्रिया') ||
+    question.includes('प्रमाणन कैसे');
+
+  const isRequirement =
+    norm.includes('require') ||
+    norm.includes('mandatory') ||
+    norm.includes('compulsory') ||
+    norm.includes('obligation') ||
+    norm.includes('law') ||
+    norm.includes('rule') ||
+    norm.includes('need') ||
+    norm.includes('crs') ||
+    norm.includes('qco') ||
+    question.includes('आवश्यक') ||
+    question.includes('अनिवार्य') ||
+    question.includes('नियम') ||
+    question.includes('लागू');
+
+  const isFineness =
+    norm.includes('fineness') ||
+    norm.includes('purity') ||
+    norm.includes('grade') ||
+    norm.includes('22k916') ||
+    norm.includes('916') ||
+    norm.includes('999') ||
+    norm.includes('925') ||
+    norm.includes('750') ||
+    norm.includes('meaning') ||
+    norm.includes('mean') ||
+    norm.includes('stand for') ||
+    question.includes('शुद्धता') ||
+    question.includes('फाइननेस') ||
+    question.includes('ग्रेड') ||
+    question.includes('अर्थ') ||
+    question.includes('मतलब');
+
+  const isVerify =
+    norm.includes('verify') ||
+    norm.includes('check') ||
+    norm.includes('authenticate') ||
+    norm.includes('huid') ||
+    norm.includes('bis care') ||
+    norm.includes('app') ||
+    norm.includes('laser') ||
+    question.includes('सत्यापित') ||
+    question.includes('जाँच') ||
+    question.includes('जांच') ||
+    question.includes('पहचान');
+
+  if (isRoadmap) return { scope, intent: 'ROADMAP_REQUEST' };
+  if (isRequirement) return { scope, intent: 'REQUIREMENT_CHECK' };
+  if (isFineness) return { scope, intent: 'EXPLAIN_FINENESS' };
+  if (isVerify) return { scope, intent: 'VERIFY_HALLMARK_HUID' };
+
+  return { scope, intent: 'DISCOVER_STANDARD' };
+}
+
+// ─── Answer Engine (Grounded, Safe Abstention, No Hallucination) ──────────────
 function getAnswer(question: string, currentLang: Language): ChatMessage {
   const queryLang = classifyQueryLanguage(question);
 
-  // Hinglish rejection (preserved)
+  // Hinglish rejection (strict policy)
   if (queryLang === 'Hinglish') {
     if (currentLang === 'Hindi') {
       return {
@@ -427,7 +692,7 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'हिंग्लिश समर्थित नहीं है।',
         answerText: 'हिंग्लिश (Hinglish) समर्थित नहीं है।',
-        nextStep: 'SahayakBIS केवल शुद्ध अंग्रेज़ी (English) या हिन्दी (देवनागरी) में प्रश्नों का उत्तर देता है। कृपया अपना प्रश्न शुद्ध अंग्रेज़ी या हिन्दी में पूछें।',
+        nextStep: 'SahayakBIS केवल शुद्ध अंग्रेज़ी (English) या हिन्दी (देवनागरी लिपि) में प्रश्नों का उत्तर देता है। कृपया अपना प्रश्न शुद्ध अंग्रेज़ी या हिन्दी में पूछें।',
         citation: 'असमर्थित भाषा · केवल English या हिन्दी',
         hinglish: true,
       };
@@ -437,198 +702,132 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       role: 'assistant',
       text: 'Hinglish is not supported.',
       answerText: 'Hinglish is not supported.',
-      nextStep: 'SahayakBIS only provides responses in standard English or Hindi (हिन्दी). Please ask your question in English or Hindi (Devanagari script).',
+      nextStep: 'SahayakBIS only provides responses in standard English or Hindi (हिन्दी). Please ask your question in standard English or Hindi (Devanagari script).',
       citation: 'Unsupported language · English or Hindi only',
       hinglish: true,
     };
   }
 
   const answerLang: Language = queryLang === 'Hindi' ? 'Hindi' : 'English';
-  const normalized = question.toLowerCase();
+  const classification = classifyUserQuery(question);
 
-  // Topic detection (preserved exactly)
-  const isLed =
-    normalized.includes('led') ||
-    normalized.includes('bulb') ||
-    normalized.includes('lamp') ||
-    normalized.includes('16102') ||
-    question.includes('बल्ब') ||
-    question.includes('एलईडी') ||
-    question.includes('लैंप');
-
-  const isGold =
-    normalized.includes('gold') ||
-    normalized.includes('22k') ||
-    normalized.includes('24k') ||
-    normalized.includes('18k') ||
-    normalized.includes('14k') ||
-    normalized.includes('karat') ||
-    normalized.includes('carat') ||
-    question.includes('सोना') ||
-    question.includes('सोने') ||
-    question.includes('स्वर्ण');
-
-  const isSilver =
-    normalized.includes('silver') ||
-    normalized.includes('2112') ||
-    normalized.includes('sterling') ||
-    question.includes('चाँदी') ||
-    question.includes('चांदी') ||
-    question.includes('रजत');
-
-  const isHallmarking =
-    normalized.includes('hallmark') ||
-    normalized.includes('huid') ||
-    question.includes('हॉलमार्क') ||
-    question.includes('हॉलमार्किंग');
-
-  // 1. Combined hallmarking / general hallmarking
-  if ((isGold && isSilver) || (isHallmarking && !isLed && !isGold && !isSilver)) {
+  // 1. Adversarial Guarantee or Direct Certification Demands
+  if (classification.intent === 'ADVERSARIAL_GUARANTEE') {
     if (answerLang === 'Hindi') {
       return {
         id: Date.now() + 1,
         role: 'assistant',
-        text: 'BIS हॉलमार्किंग सोने और चाँदी की शुद्धता प्रमाणित करती है।',
-        answerText: 'BIS हॉलमार्किंग सोने (IS 1417) और चाँदी (IS 2112) के आभूषणों व कलाकृतियों की शुद्धता प्रमाणित करती है। असली हॉलमार्क में तीन प्रमुख चिह्न होते हैं: 1) BIS लोगो, 2) शुद्धता/फाइननेस ग्रेड (जैसे सोने के लिए 22K916 और चाँदी के लिए 925 स्टर्लिंग), और 3) 6 अंकों का अल्फ़ान्यूमेरिक HUID कोड।',
-        evidenceTitle: 'BIS हॉलमार्किंग FAQs व मानक',
-        evidenceIsNumber: 'IS 1417 (Gold) · IS 2112 (Silver)',
-        evidenceUrl: HALLMARKING_FAQ_URL,
-        evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
-        nextStep: 'BIS CARE मोबाइल ऐप में "Verify HUID" फीचर से आभूषण की प्रामाणिकता तुरंत जाँचें।',
-        nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+        text: 'SahayakBIS एक मार्गदर्शन सहायक है, प्रमाणन निकाय नहीं।',
+        answerText: 'SahayakBIS एक साक्ष्य-आधारित मार्गदर्शन सहायक है, कोई प्रमाणन प्राधिकरण, परीक्षण प्रयोगशाला या अनुमोदन निकाय नहीं। SahayakBIS किसी उत्पाद या कारखाने के लिए BIS प्रमाणन की गारंटी नहीं दे सकता और न ही प्रमाण पत्र जारी कर सकता है। सभी आधिकारिक अनुरूपता मूल्यांकन और लाइसेंस केवल भारतीय मानक ब्यूरो (BIS) और मान्यता प्राप्त प्रयोगशालाओं द्वारा प्रदान किए जाते हैं।',
+        nextStep: 'आधिकारिक प्रमाणन प्रक्रिया शुरू करने के लिए BIS से मान्यता प्राप्त प्रयोगशाला में नमूना भेजें और आधिकारिक BIS पोर्टल पर आवेदन करें।',
+        nextStepUrl: 'https://www.bis.gov.in/product-certification/online-information/',
         followUpsHi: [
+          'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
+          'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
+          'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+        ],
+        citation: 'प्राधिकरण अस्वीकरण · BIS एकमात्र प्रमाणन निकाय है',
+        abstention: true,
+      };
+    }
+    return {
+      id: Date.now() + 1,
+      role: 'assistant',
+      text: 'SahayakBIS is an AI guidance companion, not a certification authority.',
+      answerText: 'SahayakBIS is an evidence-grounded AI guidance companion, not a certification body, testing laboratory, or approval engine. SahayakBIS cannot grant compliance certificates, issue exemptions, or guarantee that any product, sample, or factory will pass BIS conformity assessment. All official conformity assessment, testing, and licensing are exclusively conducted by the Bureau of Indian Standards (BIS) and BIS-recognized laboratories.',
+      nextStep: 'To initiate official conformity assessment, submit product samples to a BIS-recognized laboratory and apply via the official BIS portal.',
+      nextStepUrl: 'https://www.bis.gov.in/product-certification/online-information/',
+      followUps: [
+        'Which BIS standard applies to LED bulbs?',
+        'What is the BIS certification requirement for LED lamps?',
+        'How do I verify gold hallmarking & HUID?',
+      ],
+      citation: 'Authority Notice · BIS is the sole certification authority',
+      abstention: true,
+    };
+  }
+
+  // 2. Unknown Product (Out of pilot scope)
+  if (classification.intent === 'UNKNOWN_PRODUCT_QUERY') {
+    const prodName = classification.unknownProductTerm || 'this product';
+    if (answerLang === 'Hindi') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'यह उत्पाद वर्तमान प्रायोगिक दायरे से बाहर है।',
+        answerText: 'इस प्रोटोटाइप प्रदर्शन में, SahayakBIS तीन प्रायोगिक मानक श्रेणियों पर केंद्रित है: LED लैंप (IS 16102), स्वर्ण हॉलमार्किंग (IS 1417), और रजत हॉलमार्किंग (IS 2112)। अन्य उत्पादों (जैसे कि आपका पूछा गया उत्पाद) के लिए लागू मानक और अनिवार्य QCO आधिकारिक BIS पोर्टल पर उपलब्ध हैं।',
+        nextStep: 'लागू भारतीय मानक (IS संख्या) खोजने के लिए आधिकारिक BIS पोर्टल या BIS CARE ऐप पर खोजें।',
+        nextStepUrl: BIS_PORTAL_URL,
+        followUpsHi: [
+          'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
           'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
           'चाँदी की हॉलमार्किंग मानक (IS 2112)',
-          'BIS CARE ऐप में हॉलमार्क कैसे सत्यापित करें?',
         ],
-        citation: 'BIS हॉलमार्किंग · HUID',
-        sourceUrl: HALLMARKING_FAQ_URL,
+        citation: 'दायरा सीमा · केवल LED, स्वर्ण और रजत प्रायोगिक श्रेणी',
+        abstention: true,
       };
     }
     return {
       id: Date.now() + 1,
       role: 'assistant',
-      text: 'BIS Hallmarking certifies purity of Gold and Silver jewellery.',
-      answerText: 'BIS Hallmarking certifies the purity and fineness of Gold (IS 1417) and Silver (IS 2112) jewellery and artefacts. A genuine hallmark consists of three marks: 1) BIS Logo, 2) Purity & Fineness grade (e.g., 22K916 for gold, 925 for silver), and 3) a unique 6-digit alphanumeric HUID code.',
-      evidenceTitle: 'BIS Hallmarking FAQs & Standards',
-      evidenceIsNumber: 'IS 1417 (Gold) · IS 2112 (Silver)',
-      evidenceUrl: HALLMARKING_FAQ_URL,
-      evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
-      nextStep: 'Verify hallmarked items using the "Verify HUID" feature in the official BIS CARE mobile app.',
-      nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+      text: 'This product is outside the current prototype pilot scope.',
+      answerText: `In this prototype demonstration, SahayakBIS is specifically grounded on three pilot standard categories: Self-Ballasted LED Lamps (IS 16102), Gold Hallmarking (IS 1417), and Silver Hallmarking (IS 2112). For other products (such as ${prodName}), standards and mandatory Quality Control Orders (QCOs) are published on the official BIS Standards Directory.`,
+      nextStep: 'Search for the applicable Indian Standard (IS number) on the official BIS portal or consult the BIS CARE app.',
+      nextStepUrl: BIS_PORTAL_URL,
       followUps: [
+        'Which BIS standard applies to LED bulbs?',
         'How do I verify gold hallmarking & HUID?',
         'What are the silver hallmarking standards (IS 2112)?',
-        'How does 6-digit HUID verification work?',
       ],
-      citation: 'BIS Hallmarking Overview · HUID',
-      sourceUrl: HALLMARKING_FAQ_URL,
+      citation: 'Scope Boundary · LED, Gold & Silver pilot categories',
+      abstention: true,
     };
   }
 
-  // 2. Gold
-  if (isGold) {
+  // 3. Out of Scope non-standards query
+  if (classification.intent === 'OUT_OF_SCOPE') {
     if (answerLang === 'Hindi') {
       return {
         id: Date.now() + 1,
         role: 'assistant',
-        text: 'असली हॉलमार्क वाले सोने पर तीन अनिवार्य चिह्न होते हैं।',
-        answerText: 'असली हॉलमार्क वाले सोने के आभूषण पर तीन अनिवार्य चिह्न होते हैं: BIS लोगो, शुद्धता या फाइननेस (जैसे 24K999, 22K916, 18K750, 14K585) और छह अंकों वाला अल्फ़ान्यूमेरिक HUID।',
-        evidenceTitle: 'BIS स्वर्ण हॉलमार्किंग FAQs व मानक',
-        evidenceIsNumber: 'IS 1417 (Gold & Gold Alloys)',
-        evidenceUrl: HALLMARKING_FAQ_URL,
-        evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
-        nextStep: 'खरीदने से पहले HUID की जाँच BIS CARE ऐप से करें। शुद्धता की जाँच के लिए BIS से मान्यता प्राप्त Assaying & Hallmarking Centre (AHC) से संपर्क करें।',
-        nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+        text: 'सत्यापित BIS स्रोत नहीं मिला।',
+        answerText: 'इस प्रश्न के लिए पर्याप्त सत्यापित BIS साक्ष्य नहीं मिले। SahayakBIS केवल भारतीय मानकों और BIS विनियामक सेवाओं (वर्तमान में LED लैंप, सोना और चाँदी) के मार्गदर्शन के लिए समर्पित है।',
+        nextStep: 'भारतीय मानकों (जैसे LED के लिए IS 16102, सोने के लिए IS 1417, या चाँदी के लिए IS 2112) के बारे में प्रश्न पूछें।',
+        nextStepUrl: BIS_PORTAL_URL,
         followUpsHi: [
-          '6-अंकीय HUID कोड कैसे काम करता है?',
-          'सोने के शुद्धता ग्रेड (22K बनाम 24K) क्या हैं?',
-          'मान्यता प्राप्त AHC परख केंद्र कहाँ खोजें?',
+          'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
+          'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+          'चाँदी की हॉलमार्किंग मानक (IS 2112)',
         ],
-        citation: 'BIS स्वर्ण हॉलमार्किंग · HUID',
-        sourceUrl: HALLMARKING_FAQ_URL,
+        citation: 'सत्यापित स्रोत नहीं मिला',
+        abstention: true,
       };
     }
     return {
       id: Date.now() + 1,
       role: 'assistant',
-      text: 'A genuine hallmarked gold article carries three mandatory marks.',
-      answerText: 'A genuine hallmarked gold article carries three mandatory marks: the BIS logo, purity or fineness grade (such as 24K999, 22K916, 18K750, 14K585), and a six-digit alphanumeric HUID. You can use the BIS CARE app to verify the HUID and jeweller details before buying.',
-      evidenceTitle: 'BIS Gold Hallmarking FAQs',
-      evidenceIsNumber: 'IS 1417 (Gold & Gold Alloys)',
-      evidenceUrl: HALLMARKING_FAQ_URL,
-      evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
-      nextStep: 'Purity testing can also be performed at any BIS-recognised Assaying & Hallmarking Centre (AHC). Use the BIS CARE app to verify HUID.',
-      nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+      text: 'Verified BIS evidence not found for that question.',
+      answerText: 'I could not find verified BIS evidence to answer that question. SahayakBIS is strictly dedicated to Indian Standards and BIS regulatory guidance, currently demonstrating LED Lamps (IS 16102), Gold Hallmarking (IS 1417), and Silver Hallmarking (IS 2112).',
+      nextStep: 'Please ask a question regarding Indian Standards, certification requirements, or precious metals hallmarking.',
+      nextStepUrl: BIS_PORTAL_URL,
       followUps: [
-        'How does 6-digit HUID verification work?',
-        'What are the gold fineness grades (22K vs 24K)?',
-        'Where can I find a BIS-recognised AHC?',
+        'Which BIS standard applies to LED bulbs?',
+        'How do I verify gold hallmarking & HUID?',
+        'What are the silver hallmarking standards (IS 2112)?',
       ],
-      citation: 'BIS Gold Hallmarking · HUID',
-      sourceUrl: HALLMARKING_FAQ_URL,
+      citation: 'Verified source not found',
+      abstention: true,
     };
   }
 
-  // 3. Silver
-  if (isSilver) {
+  // 4. LED Lamp Category (IS 16102)
+  if (classification.scope === 'LED') {
     if (answerLang === 'Hindi') {
-      return {
-        id: Date.now() + 1,
-        role: 'assistant',
-        text: 'भारत में चाँदी की हॉलमार्किंग IS 2112 के तहत होती है।',
-        answerText: 'भारत में चाँदी के आभूषणों और कलाकृतियों की हॉलमार्किंग भारतीय मानक IS 2112 (Silver and Silver Alloys) के तहत की जाती है। BIS योजना के तहत चाँदी की हॉलमार्किंग स्वैच्छिक (Voluntary) है। हॉलमार्क वाली चाँदी पर तीन चिह्न होते हैं: BIS लोगो, शुद्धता/फाइननेस ग्रेड (जैसे 999, 970, 925 स्टर्लिंग सिल्वर, 900, 835, 800) और 6 अंकों का अल्फ़ान्यूमेरिक HUID कोड, जो शुद्धता का आधिकारिक तृतीय-पक्ष आश्वासन प्रदान करता है।',
-        evidenceTitle: 'BIS रजत (चाँदी) हॉलमार्किंग FAQs व मानक',
-        evidenceIsNumber: 'IS 2112 (Silver & Silver Alloys)',
-        evidenceUrl: HALLMARKING_FAQ_URL,
-        evidenceDetail: EVIDENCE_DATABASE['IS 2112'],
-        nextStep: 'HUID की जाँच BIS CARE ऐप से करें। यह उपभोक्ताओं को शुद्धता और प्रामाणिकता का आधिकारिक सत्यापन प्रदान करता है।',
-        nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
-        followUpsHi: [
-          '925 स्टर्लिंग चाँदी की शुद्धता क्या है?',
-          'क्या चाँदी की हॉलमार्किंग अनिवार्य है या स्वैच्छिक?',
-          'BIS CARE ऐप में चाँदी का हॉलमार्क कैसे जाँचें?',
-        ],
-        citation: 'BIS रजत (चाँदी) · IS 2112',
-        sourceUrl: HALLMARKING_FAQ_URL,
-      };
-    }
-    return {
-      id: Date.now() + 1,
-      role: 'assistant',
-      text: 'Silver hallmarking in India is governed by IS 2112.',
-      answerText: 'Silver hallmarking in India is governed by Indian Standard IS 2112 (Silver and Silver Alloys, Jewellery/Artefacts). Under the BIS Hallmarking Scheme, silver hallmarking is voluntary. Hallmarked silver carries three marks: the BIS logo, purity/fineness grade (such as 999, 970, 925 for Sterling Silver, 900, 835, 800), and a six-digit alphanumeric HUID. This provides third-party assurance of purity and authenticity.',
-      evidenceTitle: 'BIS Silver Hallmarking FAQs',
-      evidenceIsNumber: 'IS 2112 (Silver & Silver Alloys)',
-      evidenceUrl: HALLMARKING_FAQ_URL,
-      evidenceDetail: EVIDENCE_DATABASE['IS 2112'],
-      nextStep: 'Verify silver HUID using the BIS CARE mobile app before purchasing.',
-      nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
-      followUps: [
-        'What is 925 sterling silver purity?',
-        'Is silver hallmarking mandatory or voluntary?',
-        'How to verify silver hallmarking in BIS CARE?',
-      ],
-      citation: 'BIS Silver Hallmarking · IS 2112',
-      sourceUrl: HALLMARKING_FAQ_URL,
-    };
-  }
-
-  // 4. LED
-  if (isLed) {
-    const isRoadmapQuery = normalized.includes('roadmap') || question.includes('रोडमैप');
-    const isRequirementQuery =
-      normalized.includes('require') ||
-      normalized.includes('mandatory') ||
-      question.includes('आवश्य') ||
-      normalized.includes('rule');
-
-    if (answerLang === 'Hindi') {
-      let hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप को Compulsory Registration Scheme (CRS) के अंतर्गत BIS पंजीकरण की आवश्यकता होती है। सुरक्षा के लिए IS 16102 (Part 1):2012 और प्रदर्शन के लिए IS 16102 (Part 2):2012 लागू होता है।';
-      if (isRoadmapQuery) {
-        hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप का BIS CRS प्रमाणन 5-चरणीय रोडमैप का पालन करता है: मानक पहचान (IS 16102), CRS योजना सत्यापन, BIS प्रयोगशाला परीक्षण (सुरक्षा Part 1 व प्रदर्शन Part 2), दस्तावेज़ तैयारी, और ऑनलाइन पंजीकरण। पूरा रोडमैप देखने के लिए नीचे का बटन दबाएँ।';
-      } else if (isRequirementQuery) {
-        hiAnswer = 'सेल्फ-बैलेस्टेड LED लैंप के लिए Compulsory Registration Scheme (CRS) के तहत अनिवार्य BIS आवश्यकता है। निर्माताओं को IS 16102 (Part 1):2012 के तहत विद्युत सुरक्षा और IS 16102 (Part 2):2012 के तहत प्रदर्शन के लिए BIS मान्यता प्राप्त लैब में परीक्षण कराकर BIS CRS पोर्टल पर पंजीकरण कराना अनिवार्य है।';
+      let hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप भारतीय मानक IS 16102 के अंतर्गत आते हैं। इसके दो मुख्य भाग हैं: IS 16102 (Part 1):2012 सुरक्षा आवश्यकताओं (इन्सुलेशन प्रतिरोध, विद्युत सुरक्षा, तापीय सुरक्षा) के लिए और IS 16102 (Part 2):2012 प्रदर्शन आवश्यकताओं (वाट क्षमता, ल्यूमेन आउटपुट, रंग तापमान, जीवनकाल) के लिए। यह अनिवार्य पंजीकरण योजना (CRS) के अंतर्गत आता है।';
+      if (classification.intent === 'ROADMAP_REQUEST') {
+        hiAnswer = 'सामान्य प्रकाश व्यवस्था के लिए सेल्फ-बैलेस्टेड LED लैंप का BIS CRS प्रमाणन 5 प्रमुख चरणों का पालन करता है: 1) लागू मानक पहचान (IS 16102), 2) CRS योजना सत्यापन, 3) BIS प्रयोगशाला परीक्षण (सुरक्षा Part 1 व प्रदर्शन Part 2), 4) दस्तावेज़ तैयारी, और 5) ऑनलाइन पंजीकरण व R-number प्राप्ति। पूरा रोडमैप देखने के लिए नीचे का बटन दबाएँ।';
+      } else if (classification.intent === 'REQUIREMENT_CHECK') {
+        hiAnswer = 'हाँ, इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश के तहत सेल्फ-बैलेस्टेड LED लैंप के लिए BIS CRS पंजीकरण अनिवार्य है। निर्माताओं को IS 16102 (Part 1):2012 के तहत विद्युत सुरक्षा और IS 16102 (Part 2):2012 के तहत प्रदर्शन के लिए BIS मान्यता प्राप्त लैब में परीक्षण कराकर BIS CRS पोर्टल पर पंजीकरण कराना और पैकेजिंग पर R-number लगाना अनिवार्य है।';
       }
 
       return {
@@ -653,11 +852,11 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       };
     }
 
-    let enAnswer = 'Self-ballasted LED lamps for general lighting require BIS registration under the Compulsory Registration Scheme (CRS). The key safety standard is IS 16102 (Part 1):2012; performance requirements are covered by IS 16102 (Part 2):2012. The product is tested at a BIS-recognised laboratory before registration on the BIS CRS portal.';
-    if (isRoadmapQuery) {
-      enAnswer = 'The BIS certification journey for self-ballasted LED lamps under the Compulsory Registration Scheme (CRS) follows a structured 5-stage roadmap: Standard Identification (IS 16102), CRS Scheme check, Laboratory testing (IS 16102 Part 1 for safety & Part 2 for performance), Documentation, and Portal Registration. Click "View Certification Roadmap" below to explore each milestone.';
-    } else if (isRequirementQuery) {
-      enAnswer = 'Self-ballasted LED lamps for general lighting have mandatory BIS certification requirements under the Compulsory Registration Scheme (CRS). Manufacturers must test lamps at a BIS-recognized laboratory for electrical safety under IS 16102 (Part 1):2012 and performance parameters (wattage, lumen maintenance) under IS 16102 (Part 2):2012, followed by registration on the BIS CRS portal to obtain a valid R-number.';
+    let enAnswer = 'Self-ballasted LED lamps for general lighting services are governed by Indian Standard IS 16102. It comprises two complementary parts: IS 16102 (Part 1):2012 covering Safety Requirements (insulation resistance, electric shock protection, mechanical strength) and IS 16102 (Part 2):2012 covering Performance Requirements (wattage, luminous flux, colour temperature, life test). LED lamps fall under the Compulsory Registration Scheme (CRS).';
+    if (classification.intent === 'ROADMAP_REQUEST') {
+      enAnswer = 'The BIS certification journey for self-ballasted LED lamps under the Compulsory Registration Scheme (CRS) follows a structured 5-stage roadmap: 1) Identify Applicable Standard (IS 16102), 2) Check CRS Scheme Applicability, 3) Sample Testing at BIS-Recognized Lab (Safety & Performance), 4) Prepare Application & Technical Documents, and 5) Portal Submission & R-number Grant. Click "View Certification Roadmap" below to explore each milestone.';
+    } else if (classification.intent === 'REQUIREMENT_CHECK') {
+      enAnswer = 'Yes, self-ballasted LED lamps have mandatory BIS registration requirements under the Compulsory Registration Scheme (CRS). Under the Electronics and Information Technology Goods (Requirement for Compulsory Registration) Order, manufacturers must test lamps at a BIS-recognized laboratory against IS 16102 (Part 1):2012 for electrical safety and IS 16102 (Part 2):2012 for performance parameters, followed by registration on the BIS CRS portal to obtain a valid R-number before sale in India.';
     }
 
     return {
@@ -682,38 +881,133 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
     };
   }
 
-  // 5. Safe abstention (preserved, enhanced with action fields)
+  // 5. Gold Category (IS 1417)
+  if (classification.scope === 'GOLD') {
+    if (classification.intent === 'EXPLAIN_FINENESS') {
+      if (answerLang === 'Hindi') {
+        return {
+          id: Date.now() + 1,
+          role: 'assistant',
+          text: '22K916 का अर्थ 91.6% शुद्ध सोना है।',
+          answerText: 'भारतीय मानक IS 1417:2016 के तहत सोने की शुद्धता को 6 मान्यता प्राप्त ग्रेडों में कैरेट और फाइननेस (प्रति हज़ार भाग) के रूप में व्यक्त किया जाता है: 24K999 (99.9% शुद्ध), 23K958 (95.8%), 22K916 (91.6% — पारंपरिक आभूषणों के लिए मानक), 20K833 (83.3%), 18K750 (75.0% — हीरे के आभूषणों के लिए), और 14K585 (58.5%)। 22K916 का अर्थ है 22 कैरेट सोना जिसमें प्रति 1000 भाग में 916 भाग शुद्ध सोना है।',
+          evidenceTitle: 'BIS स्वर्ण हॉलमार्किंग मानक निर्देशिका',
+          evidenceIsNumber: 'IS 1417:2016 (Gold & Gold Alloys)',
+          evidenceUrl: HALLMARKING_FAQ_URL,
+          evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
+          nextStep: 'खरीदते समय आभूषण पर BIS लोगो, 22K916 अंकन, और 6 अंकों का HUID कोड अवश्य देखें।',
+          nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+          followUpsHi: [
+            '6-अंकीय HUID कोड कैसे काम करता है?',
+            'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+            'मान्यता प्राप्त AHC परख केंद्र कहाँ खोजें?',
+          ],
+          citation: 'BIS स्वर्ण हॉलमार्किंग · IS 1417',
+          sourceUrl: HALLMARKING_FAQ_URL,
+        };
+      }
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: '22K916 denotes 22 Karat gold with 91.6% purity.',
+        answerText: 'Under Indian Standard IS 1417:2016, gold fineness is expressed in parts per thousand alongside karatage across 6 recognized grades: 24K999 (99.9% pure), 23K958 (95.8% pure), 22K916 (91.6% pure — standard for traditional jewellery), 20K833 (83.3% pure), 18K750 (75.0% pure — standard for diamond jewellery), and 14K585 (58.5% pure). For example, 22K916 indicates 22 Karat gold with 916 parts pure gold out of 1000.',
+        evidenceTitle: 'BIS Gold Hallmarking Standards Directory',
+        evidenceIsNumber: 'IS 1417:2016 (Gold & Gold Alloys)',
+        evidenceUrl: HALLMARKING_FAQ_URL,
+        evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
+        nextStep: 'When buying gold, always confirm all 3 marks: BIS Logo, Karat/Fineness (e.g., 22K916), and the 6-digit HUID code.',
+        nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+        followUps: [
+          'How do I verify a 6-digit HUID on gold jewellery?',
+          'What are the other gold fineness grades?',
+          'Where can I find a BIS-recognised AHC?',
+        ],
+        citation: 'BIS Gold Hallmarking · IS 1417',
+        sourceUrl: HALLMARKING_FAQ_URL,
+      };
+    }
+
+    if (answerLang === 'Hindi') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'असली हॉलमार्क वाले सोने पर तीन अनिवार्य चिह्न होते हैं।',
+        answerText: 'IS 1417 के तहत असली हॉलमार्क वाले सोने के आभूषण पर तीन अनिवार्य चिह्न होते हैं: 1) त्रिकोणीय BIS मानक चिह्न, 2) शुद्धता/फाइननेस ग्रेड (जैसे 22K916 या 18K750), और 3) 6 अंकों का लेज़र-उत्कीर्ण अल्फ़ान्यूमेरिक HUID कोड। प्रामाणिकता की लाइव जाँच उपभोक्ता सीधे आधिकारिक BIS CARE मोबाइल ऐप में "Verify HUID" विकल्प का उपयोग करके जौहरी का विवरण और हॉलमार्किंग तिथि से तुरंत सत्यापित कर सकते हैं।',
+        evidenceTitle: 'BIS स्वर्ण हॉलमार्किंग FAQs व विनियम',
+        evidenceIsNumber: 'IS 1417:2016 (Gold & Gold Alloys)',
+        evidenceUrl: HALLMARKING_FAQ_URL,
+        evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
+        nextStep: 'खरीदने से पहले HUID की जाँच आधिकारिक BIS CARE ऐप से करें। शुद्धता परीक्षण के लिए BIS मान्यता प्राप्त परख केंद्र (AHC) से संपर्क करें।',
+        nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+        followUpsHi: [
+          '22K916 का क्या मतलब है?',
+          '6-अंकीय HUID कोड कैसे काम करता है?',
+          'मान्यता प्राप्त AHC परख केंद्र कहाँ खोजें?',
+        ],
+        citation: 'BIS स्वर्ण हॉलमार्किंग · HUID',
+        sourceUrl: HALLMARKING_FAQ_URL,
+      };
+    }
+    return {
+      id: Date.now() + 1,
+      role: 'assistant',
+      text: 'A genuine hallmarked gold article carries three mandatory marks.',
+      answerText: 'A genuine hallmarked gold article under IS 1417 carries three mandatory marks: 1) The BIS triangular standard mark, 2) Purity/Fineness grade (such as 22K916 or 18K750), and 3) a unique 6-digit laser-engraved alphanumeric HUID (Hallmark Unique Identification). Live consumer authenticity lookup is performed directly on the official BIS CARE mobile app using the "Verify HUID" feature, which displays jeweller registration and assaying details.',
+      evidenceTitle: 'BIS Gold Hallmarking FAQs & Regulations',
+      evidenceIsNumber: 'IS 1417:2016 (Gold & Gold Alloys)',
+      evidenceUrl: HALLMARKING_FAQ_URL,
+      evidenceDetail: EVIDENCE_DATABASE['IS 1417'],
+      nextStep: 'Verify your gold jewellery HUID on the official BIS CARE mobile app before purchasing, or consult a registered Assaying & Hallmarking Centre (AHC).',
+      nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
+      followUps: [
+        'What does 22K916 mean?',
+        'How does 6-digit HUID verification work?',
+        'Where can I find a BIS-recognised AHC?',
+      ],
+      citation: 'BIS Gold Hallmarking · HUID',
+      sourceUrl: HALLMARKING_FAQ_URL,
+    };
+  }
+
+  // 6. Silver Category (IS 2112)
   if (answerLang === 'Hindi') {
     return {
       id: Date.now() + 1,
       role: 'assistant',
-      text: 'सत्यापित BIS स्रोत नहीं मिला।',
-      answerText: 'इस प्रश्न के लिए पर्याप्त सत्यापित BIS साक्ष्य नहीं मिले।',
-      nextStep: 'SahayakBIS केवल LED बल्ब (IS 16102), सोने की हॉलमार्किंग (IS 1417), और चाँदी की हॉलमार्किंग (IS 2112) की सत्यापित जानकारी प्रदान करता है। इन्हीं श्रेणियों के बारे में पूछें या आधिकारिक BIS स्रोत देखें।',
-      nextStepUrl: BIS_PORTAL_URL,
+      text: 'भारत में चाँदी की हॉलमार्किंग IS 2112 के तहत स्वैच्छिक है।',
+      answerText: 'भारत में चाँदी के आभूषणों और कलाकृतियों की हॉलमार्किंग भारतीय मानक IS 2112 (Silver and Silver Alloys) के अंतर्गत आती है। BIS योजना के तहत चाँदी की हॉलमार्किंग वर्तमान में एक स्वैच्छिक (Voluntary) योजना है। हॉलमार्क वाली वस्तुओं पर तीन चिह्न होते हैं: BIS लोगो, शुद्धता/फाइननेस ग्रेड (जैसे 999, 970, 925 स्टर्लिंग सिल्वर, 900, 835, 800) और 6 अंकों का अल्फ़ान्यूमेरिक HUID कोड, जो उपभोक्ताओं को आधिकारिक तृतीय-पक्ष शुद्धता आश्वासन प्रदान करता है।',
+      evidenceTitle: 'BIS रजत (चाँदी) हॉलमार्किंग FAQs व मानक',
+      evidenceIsNumber: 'IS 2112:2014 (Silver & Silver Alloys)',
+      evidenceUrl: HALLMARKING_FAQ_URL,
+      evidenceDetail: EVIDENCE_DATABASE['IS 2112'],
+      nextStep: 'चाँदी के HUID की जाँच BIS CARE ऐप से करें। यह उपभोक्ताओं को शुद्धता और प्रामाणिकता का आधिकारिक सत्यापन प्रदान करता है।',
+      nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
       followUpsHi: [
-        'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
-        'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
-        'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+        '925 स्टर्लिंग चाँदी की शुद्धता क्या है?',
+        'क्या चाँदी की हॉलमार्किंग अनिवार्य है या स्वैच्छिक?',
+        'BIS CARE ऐप में चाँदी का हॉलमार्क कैसे जाँचें?',
       ],
-      citation: 'सत्यापित स्रोत नहीं मिला',
-      abstention: true,
+      citation: 'BIS रजत (चाँदी) · IS 2112',
+      sourceUrl: HALLMARKING_FAQ_URL,
     };
   }
   return {
     id: Date.now() + 1,
     role: 'assistant',
-    text: 'Verified BIS evidence not found for that question.',
-    answerText: 'I could not find sufficient verified BIS evidence to answer that question definitively.',
-    nextStep: 'SahayakBIS covers LED bulbs (IS 16102), Gold hallmarking (IS 1417), and Silver hallmarking (IS 2112). Try asking about one of these supported categories, or view the official BIS sources.',
-    nextStepUrl: BIS_PORTAL_URL,
+    text: 'Silver hallmarking in India is governed by IS 2112.',
+    answerText: 'Silver hallmarking in India is governed by Indian Standard IS 2112 (Silver and Silver Alloys, Jewellery/Artefacts). Under the BIS Hallmarking Scheme, silver hallmarking is a voluntary scheme for jewellers. Compliant silver articles carry three marks: the BIS logo, purity/fineness grade (such as 999, 970, 925 for Sterling Silver, 900, 835, 800), and a six-digit alphanumeric HUID. Hallmarking provides third-party assurance of purity against adulteration.',
+    evidenceTitle: 'BIS Silver Hallmarking FAQs & Standards',
+    evidenceIsNumber: 'IS 2112:2014 (Silver & Silver Alloys)',
+    evidenceUrl: HALLMARKING_FAQ_URL,
+    evidenceDetail: EVIDENCE_DATABASE['IS 2112'],
+    nextStep: 'Verify silver hallmarking details and registered Assaying & Hallmarking Centres (AHCs) via the BIS CARE mobile app.',
+    nextStepUrl: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
     followUps: [
-      'Which BIS standard applies to LED bulbs?',
-      'How do I verify gold hallmarking & HUID?',
-      'What are the silver hallmarking standards (IS 2112)?',
+      'What is 925 sterling silver purity?',
+      'Is silver hallmarking mandatory or voluntary?',
+      'How to verify silver hallmarking in BIS CARE?',
     ],
-    citation: 'Verified source not found',
-    abstention: true,
+    citation: 'BIS Silver Hallmarking · IS 2112',
+    sourceUrl: HALLMARKING_FAQ_URL,
   };
 }
 
@@ -832,25 +1126,80 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      {/* ── Intent Buttons ── */}
-      <View style={styles.intentBar}>
-        {INTENTS.map((intent) => {
-          const Icon = intent.icon;
-          return (
-            <Pressable
-              key={intent.id}
-              onPress={() => sendQuestion(language === 'Hindi' ? intent.queryHi : intent.query)}
-              style={styles.intentButton}
-              accessibilityRole="button"
-              accessibilityLabel={language === 'Hindi' ? intent.labelHi : intent.label}
-            >
-              <Icon color={C.primary} size={13} strokeWidth={2} />
-              <Text style={styles.intentLabel} numberOfLines={1}>
-                {language === 'Hindi' ? intent.labelHi : intent.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+      {/* ── Pilot Scope Statement Banner ── */}
+      <View style={styles.scopeBanner}>
+        <View style={styles.scopeBadge}>
+          <Sparkles color={C.amberDark} size={12} />
+          <Text style={styles.scopeBadgeText}>
+            {language === 'Hindi' ? 'प्रायोगिक दायरा · SIH 2026' : 'PILOT SCOPE · SIH 2026'}
+          </Text>
+        </View>
+        <Text style={styles.scopeText}>
+          {language === 'Hindi'
+            ? 'उद्योग (LED · IS 16102) और उपभोक्ता संरक्षण (सोना व चाँदी · IS 1417, IS 2112) के प्रतिनिधि मानकों का प्रदर्शन। सभी BIS मानकों के लिए विस्तार योग्य।'
+            : 'Demonstrating representative Indian Standards across Industry (LED · IS 16102) & Consumer Protection (Gold & Silver · IS 1417, IS 2112). Extensible to all BIS standards.'}
+        </Text>
+      </View>
+
+      {/* ── Dual-Category Intent Buttons ── */}
+      <View style={styles.intentBarContainer}>
+        {/* Industry Group */}
+        <View style={styles.intentGroup}>
+          <View style={styles.intentGroupHeader}>
+            <View style={[styles.intentCategoryDot, { backgroundColor: C.primary }]} />
+            <Text style={styles.intentGroupTitle}>
+              {language === 'Hindi' ? 'उद्योग पायलट (LED)' : 'Industry Pilot (LED)'}
+            </Text>
+          </View>
+          <View style={styles.intentRow}>
+            {INTENTS.filter((i) => i.category === 'Industry').map((intent) => {
+              const Icon = intent.icon;
+              return (
+                <Pressable
+                  key={intent.id}
+                  onPress={() => sendQuestion(language === 'Hindi' ? intent.queryHi : intent.query)}
+                  style={styles.intentButton}
+                  accessibilityRole="button"
+                  accessibilityLabel={language === 'Hindi' ? intent.labelHi : intent.label}
+                >
+                  <Icon color={C.primary} size={12} strokeWidth={2} />
+                  <Text style={styles.intentLabel} numberOfLines={1}>
+                    {language === 'Hindi' ? intent.labelHi : intent.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Consumer Group */}
+        <View style={styles.intentGroup}>
+          <View style={styles.intentGroupHeader}>
+            <View style={[styles.intentCategoryDot, { backgroundColor: C.gold }]} />
+            <Text style={styles.intentGroupTitle}>
+              {language === 'Hindi' ? 'उपभोक्ता पायलट (स्वर्ण व रजत)' : 'Consumer Pilot (Precious Metals)'}
+            </Text>
+          </View>
+          <View style={styles.intentRow}>
+            {INTENTS.filter((i) => i.category === 'Consumer').map((intent) => {
+              const Icon = intent.icon;
+              return (
+                <Pressable
+                  key={intent.id}
+                  onPress={() => sendQuestion(language === 'Hindi' ? intent.queryHi : intent.query)}
+                  style={[styles.intentButton, styles.intentButtonConsumer]}
+                  accessibilityRole="button"
+                  accessibilityLabel={language === 'Hindi' ? intent.labelHi : intent.label}
+                >
+                  <Icon color={C.amberDark} size={12} strokeWidth={2} />
+                  <Text style={[styles.intentLabel, styles.intentLabelConsumer]} numberOfLines={1}>
+                    {language === 'Hindi' ? intent.labelHi : intent.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
       </View>
 
       {/* ── Suggested chips ── */}
@@ -1057,19 +1406,40 @@ export default function ExploreScreen() {
                         <ExternalLink color={C.primary} size={12} />
                       </Pressable>
                     )}
-                    {/* Abstention extra: View sources + Refine */}
+                    {/* Abstention dual actions: Refine Question + View official BIS sources */}
                     {message.abstention && (
-                      <Pressable
-                        onPress={() => Linking.openURL(BIS_PORTAL_URL)}
-                        style={styles.abstentionAction}
-                        accessibilityRole="link"
-                      >
-                        <Globe2 color={C.primary} size={13} />
-                        <Text style={styles.abstentionActionText}>
-                          {language === 'Hindi' ? 'आधिकारिक BIS स्रोत देखें' : 'View official BIS sources'}
-                        </Text>
-                        <ExternalLink color={C.primary} size={12} />
-                      </Pressable>
+                      <View style={styles.abstentionActionsWrap}>
+                        <Pressable
+                          onPress={() => {
+                            setQuestion('');
+                            sendQuestion(
+                              language === 'Hindi'
+                                ? 'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?'
+                                : 'Which BIS standard applies to LED bulbs?'
+                            );
+                          }}
+                          style={styles.abstentionRefineBtn}
+                          accessibilityRole="button"
+                          accessibilityLabel="Refine question with sample"
+                        >
+                          <Sparkles color={C.primaryDark} size={12} />
+                          <Text style={styles.abstentionRefineBtnText}>
+                            {language === 'Hindi' ? 'सुझाया गया प्रश्न पूछें' : 'Refine Question'}
+                          </Text>
+                        </Pressable>
+                        <Pressable
+                          onPress={() => Linking.openURL(BIS_PORTAL_URL)}
+                          style={styles.abstentionSourceBtn}
+                          accessibilityRole="link"
+                          accessibilityLabel="Open official BIS portal"
+                        >
+                          <Globe2 color="#FFFFFF" size={12} />
+                          <Text style={styles.abstentionSourceBtnText}>
+                            {language === 'Hindi' ? 'आधिकारिक BIS स्रोत देखें' : 'View Official BIS Sources'}
+                          </Text>
+                          <ExternalLink color="#FFFFFF" size={11} />
+                        </Pressable>
+                      </View>
                     )}
                   </>
                 )}
@@ -1346,32 +1716,31 @@ export default function ExploreScreen() {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 10 }}>
-              {/* Metadata Grid */}
-              <View style={styles.metaGrid}>
-                <View style={styles.metaCell}>
-                  <Text style={styles.metaLabel}>Issuing Authority</Text>
-                  <Text style={styles.metaVal}>{selectedEvidence?.authority}</Text>
-                </View>
-                <View style={styles.metaCell}>
-                  <Text style={styles.metaLabel}>Edition / Status</Text>
-                  <Text style={styles.metaVal}>{selectedEvidence?.year}</Text>
-                </View>
-              </View>
-
-              {/* Scope & Clause Summary */}
+              {/* PANEL 1: Technical Standard Specification */}
               <View style={styles.drawerSection}>
+                <View style={styles.panelBadgeTech}>
+                  <Text style={styles.panelBadgeText}>PANEL 1 · TECHNICAL SPECIFICATION</Text>
+                </View>
+                <View style={styles.metaGrid}>
+                  <View style={styles.metaCell}>
+                    <Text style={styles.metaLabel}>Indian Standard</Text>
+                    <Text style={styles.metaVal}>{selectedEvidence?.isNumber}</Text>
+                  </View>
+                  <View style={styles.metaCell}>
+                    <Text style={styles.metaLabel}>Edition / Status</Text>
+                    <Text style={styles.metaVal}>{selectedEvidence?.year}</Text>
+                  </View>
+                </View>
+
                 <Text style={styles.drawerSectionHeader}>
-                  {language === 'Hindi' ? 'मानक का दायरा व सार' : 'Standard Scope & Summary'}
+                  {language === 'Hindi' ? 'मानक का दायरा व परीक्षण मापदंड' : 'Standard Scope & Test Parameters'}
                 </Text>
                 <Text style={styles.drawerSummaryText}>
                   {language === 'Hindi' ? selectedEvidence?.scopeSummaryHi : selectedEvidence?.scopeSummary}
                 </Text>
-              </View>
 
-              {/* Key Mandatory Requirements Checklist */}
-              <View style={styles.drawerSection}>
-                <Text style={styles.drawerSectionHeader}>
-                  {language === 'Hindi' ? 'प्रमुख विनियामक आवश्यकताएँ' : 'Key Mandatory Requirements'}
+                <Text style={[styles.drawerSectionHeader, { marginTop: 14 }]}>
+                  {language === 'Hindi' ? 'प्रमुख अनिवार्य परीक्षण आवश्यकताएँ' : 'Key Mandatory Testing Parameters'}
                 </Text>
                 {(language === 'Hindi'
                   ? selectedEvidence?.keyRequirementsHi
@@ -1382,6 +1751,44 @@ export default function ExploreScreen() {
                     <Text style={styles.reqText}>{req}</Text>
                   </View>
                 ))}
+              </View>
+
+              {/* PANEL 2: Regulatory Basis & Legal Order */}
+              <View style={[styles.drawerSection, styles.drawerSectionReg]}>
+                <View style={styles.panelBadgeReg}>
+                  <Text style={styles.panelBadgeTextReg}>PANEL 2 · REGULATORY LEGAL BASIS</Text>
+                </View>
+                <View style={styles.metaGrid}>
+                  <View style={styles.metaCell}>
+                    <Text style={styles.metaLabel}>Issuing Authority</Text>
+                    <Text style={styles.metaVal}>{selectedEvidence?.authority}</Text>
+                  </View>
+                  <View style={styles.metaCell}>
+                    <Text style={styles.metaLabel}>Applicability</Text>
+                    <Text
+                      style={[
+                        styles.metaVal,
+                        { color: selectedEvidence?.applicabilityType === 'Mandatory' ? C.primaryDark : C.teal },
+                      ]}
+                    >
+                      {language === 'Hindi' ? selectedEvidence?.applicabilityTypeHi : selectedEvidence?.applicabilityType}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.drawerSectionHeader}>
+                  {language === 'Hindi' ? 'वैधानिक आदेश (Statutory Order)' : 'Statutory / Regulatory Order'}
+                </Text>
+                <Text style={styles.drawerSummaryText}>
+                  {language === 'Hindi' ? selectedEvidence?.legalOrderHi : selectedEvidence?.legalOrder}
+                </Text>
+
+                <Text style={[styles.drawerSectionHeader, { marginTop: 14 }]}>
+                  {language === 'Hindi' ? 'विनियामक योजना व कानूनी स्थिति' : 'Scheme & Legal Applicability'}
+                </Text>
+                <Text style={styles.drawerSummaryText}>
+                  {language === 'Hindi' ? selectedEvidence?.regulatoryBasisHi : selectedEvidence?.regulatoryBasis}
+                </Text>
               </View>
 
               {/* Evidence Gate Grounding */}
@@ -1479,15 +1886,64 @@ const styles = StyleSheet.create({
   },
   bisLinkText: { color: C.primaryLight, fontSize: 10, fontWeight: '700' },
 
-  // Intent Bar (design.md §Main Screen — 4 action buttons)
-  intentBar: {
+  // Scope Banner (Pilot Scope Statement)
+  scopeBanner: {
+    backgroundColor: '#EEF6FC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D2E5F5',
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+  },
+  scopeBadge: {
     flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 7,
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 3,
+  },
+  scopeBadgeText: {
+    color: C.navy,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+  },
+  scopeText: {
+    color: '#2A4E6F',
+    fontSize: 11,
+    lineHeight: 15.5,
+  },
+
+  // Dual-Category Intent Bar
+  intentBarContainer: {
     backgroundColor: C.bgSoft,
     borderBottomWidth: 1,
     borderBottomColor: '#DDEAF5',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  intentGroup: {
+    gap: 5,
+  },
+  intentGroupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  intentCategoryDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  intentGroupTitle: {
+    color: C.navy,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  intentRow: {
+    flexDirection: 'row',
+    gap: 6,
   },
   intentButton: {
     flex: 1,
@@ -1495,19 +1951,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    paddingVertical: 9,
-    paddingHorizontal: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
     backgroundColor: C.bg,
-    borderRadius: 10,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: C.border,
     shadowColor: C.navy,
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
     shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
+  intentButtonConsumer: {
+    borderColor: '#E8D29F',
+    backgroundColor: '#FCFAF5',
+  },
   intentLabel: { color: C.primaryDark, fontSize: 9.5, fontWeight: '700', textAlign: 'center' },
+  intentLabelConsumer: { color: C.amberDark },
 
   // Suggested prompts
   promptRow: { gap: 7, paddingHorizontal: 12, paddingVertical: 9 },
@@ -1781,6 +2242,42 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
   },
+  drawerSectionReg: {
+    borderColor: '#C6DFDF',
+    backgroundColor: '#F7FCFC',
+  },
+  panelBadgeTech: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#EAF5FC',
+    borderColor: '#BED8F0',
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    marginBottom: 10,
+  },
+  panelBadgeText: {
+    color: C.primaryDark,
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  panelBadgeReg: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#E8F5F5',
+    borderColor: '#BBE3E4',
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    marginBottom: 10,
+  },
+  panelBadgeTextReg: {
+    color: C.teal,
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
   drawerSectionHeader: {
     color: C.navy,
     fontSize: 12.5,
@@ -1897,20 +2394,43 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   abstentionBannerText: { color: C.muted, fontSize: 11, fontWeight: '700' },
-  abstentionAction: {
+  abstentionActionsWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 10,
+    flexWrap: 'wrap',
+  },
+  abstentionRefineBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    marginTop: 9,
-    alignSelf: 'flex-start',
+    backgroundColor: '#F0F6FC',
+    borderColor: '#C0D8EC',
+    borderWidth: 1,
+    borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: C.border,
-    backgroundColor: C.primaryLight,
   },
-  abstentionActionText: { color: C.primaryDark, fontSize: 12, fontWeight: '700' },
+  abstentionRefineBtnText: {
+    color: C.primaryDark,
+    fontSize: 11.5,
+    fontWeight: '700',
+  },
+  abstentionSourceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: C.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  abstentionSourceBtnText: {
+    color: '#FFFFFF',
+    fontSize: 11.5,
+    fontWeight: '700',
+  },
 
   // Roadmap CTA inside chat
   roadmapButton: {

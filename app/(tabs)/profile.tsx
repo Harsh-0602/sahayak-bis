@@ -1,5 +1,5 @@
 import { Linking, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ExternalLink, Globe2, ShieldCheck, Sparkles } from 'lucide-react-native';
+import { ExternalLink, Globe2, ShieldCheck, Sparkles, AlertCircle, Layers } from 'lucide-react-native';
 
 const C = {
   primary: '#0070C0',
@@ -14,6 +14,7 @@ const C = {
   border: '#B7D3EA',
   amber: '#E3A62F',
   amberDark: '#9D6E00',
+  green: '#43A982',
 };
 
 const BIS_URL = 'https://www.bis.gov.in/';
@@ -24,50 +25,73 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         {/* Brand */}
         <View style={styles.avatar}>
-          <ShieldCheck color="#E3A62F" size={30} />
+          <ShieldCheck color="#E3A62F" size={32} />
         </View>
         <Text style={styles.title}>SahayakBIS</Text>
         <Text style={styles.subtitle}>
-          An evidence-grounded guidance assistant for Indian Standards and BIS services.
+          Conversational Guidance Layer for Indian Standards & BIS Services
         </Text>
-        <Text style={styles.badge}>Prototype · Smart India Hackathon 2026</Text>
+        <View style={styles.badgeWrap}>
+          <Text style={styles.badgeText}>Grand Finale Prototype · SIH 2026</Text>
+        </View>
 
-        {/* About card */}
+        {/* Architecture & Principles */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>About</Text>
-
-          <View style={styles.row}>
-            <Globe2 color={C.teal} size={18} />
-            <View style={styles.rowBody}>
-              <Text style={styles.rowTitle}>Bilingual support</Text>
-              <Text style={styles.rowText}>Ask in English or Hindi (हिन्दी · Devanagari)</Text>
-            </View>
-          </View>
+          <Text style={styles.cardTitle}>Core Design Principles</Text>
 
           <View style={styles.row}>
             <ShieldCheck color={C.primary} size={18} />
             <View style={styles.rowBody}>
-              <Text style={styles.rowTitle}>Evidence-first answers</Text>
-              <Text style={styles.rowText}>No verified BIS evidence → safe abstention, not a guess</Text>
+              <Text style={styles.rowTitle}>Evidence Gate Verification</Text>
+              <Text style={styles.rowText}>
+                Dual-pass grounded answers: no verified BIS citation → safe abstention. Zero unsupported compliance claims.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <Globe2 color={C.teal} size={18} />
+            <View style={styles.rowBody}>
+              <Text style={styles.rowTitle}>Bilingual Guidance (EN / हिन्दी)</Text>
+              <Text style={styles.rowText}>
+                Complete English and Devanagari Hindi support, with strict rejection of Hinglish transliteration.
+              </Text>
             </View>
           </View>
 
           <View style={styles.row}>
             <Sparkles color={C.amberDark} size={18} />
             <View style={styles.rowBody}>
-              <Text style={styles.rowTitle}>Certification Roadmap</Text>
-              <Text style={styles.rowText}>Step-by-step guidance from standard to BIS registration</Text>
+              <Text style={styles.rowTitle}>Industry & Consumer Dual Scope</Text>
+              <Text style={styles.rowText}>
+                Demonstrates technical compliance roadmaps for manufacturers alongside hallmarking purity verification for consumers.
+              </Text>
             </View>
           </View>
         </View>
 
-        {/* Covered standards */}
+        {/* Demonstration Scope */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Covered in this prototype</Text>
+          <Text style={styles.cardTitle}>Pilot Scope (Extensible Framework)</Text>
+          <Text style={styles.scopeIntro}>
+            This prototype demonstrates three representative Indian Standard categories across regulatory regimes:
+          </Text>
           {[
-            { cat: 'LED Bulbs', std: 'IS 16102 (Part 1):2012 · IS 16102 (Part 2):2012', scheme: 'CRS' },
-            { cat: 'Gold Hallmarking', std: 'IS 1417 (Gold & Gold Alloys)', scheme: 'Hallmarking + HUID' },
-            { cat: 'Silver Hallmarking', std: 'IS 2112 (Silver & Silver Alloys)', scheme: 'Hallmarking + HUID' },
+            {
+              cat: 'Industry: LED Lamps',
+              std: 'IS 16102 (Part 1 & 2):2012',
+              scheme: 'Compulsory Registration Scheme (CRS) · Mandatory',
+            },
+            {
+              cat: 'Consumer: Gold Jewellery',
+              std: 'IS 1417:2016',
+              scheme: 'Quality Control Order (QCO) · Mandatory Hallmarking + HUID',
+            },
+            {
+              cat: 'Consumer: Silver Jewellery',
+              std: 'IS 2112:2014',
+              scheme: 'BIS Hallmarking Scheme · Voluntary Third-Party Assurance',
+            },
           ].map((item) => (
             <View key={item.cat} style={styles.standardRow}>
               <Text style={styles.standardCat}>{item.cat}</Text>
@@ -79,15 +103,21 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {/* Disclaimer */}
+        {/* Non-Government Disclaimer */}
         <View style={styles.disclaimerCard}>
-          <Text style={styles.disclaimerTitle}>Important Notice</Text>
+          <View style={styles.disclaimerHeader}>
+            <AlertCircle color={C.amberDark} size={17} />
+            <Text style={styles.disclaimerTitle}>Statutory Authority & Disclaimer</Text>
+          </View>
           <Text style={styles.disclaimerText}>
-            SahayakBIS is a guidance tool. It is not a certification authority, approval engine,
-            legal authority or replacement for BIS Care. BIS remains the sole authority on Indian
-            Standards and certification.{'\n\n'}
-            All answers are grounded in official BIS sources. Verify with BIS directly before
-            making compliance decisions.
+            SahayakBIS is an advisory AI companion created as an academic prototype for Smart India Hackathon 2026.
+            {'\n\n'}
+            SahayakBIS is NOT a certification body, testing laboratory, or approval authority.
+            The Bureau of Indian Standards (BIS) remains the sole statutory authority for Indian Standards,
+            licensing, and conformity assessment.
+            {'\n\n'}
+            Official applications must be filed directly on the BIS portal, and consumer hallmarking
+            lookup is performed on the official BIS CARE mobile app.
           </Text>
         </View>
 
@@ -108,85 +138,102 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  content: { padding: 24, paddingTop: 40, alignItems: 'center', paddingBottom: 36 },
+  content: { padding: 20, paddingTop: 32, alignItems: 'center', paddingBottom: 36 },
   avatar: {
-    width: 74,
-    height: 74,
-    borderRadius: 24,
+    width: 68,
+    height: 68,
+    borderRadius: 22,
     backgroundColor: C.navy,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: C.navy,
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
-  title: { color: C.navy, fontSize: 28, fontWeight: '800', marginTop: 16 },
+  title: { color: C.navy, fontSize: 26, fontWeight: '800', marginTop: 14 },
   subtitle: {
     color: C.muted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 13.5,
+    lineHeight: 19,
     textAlign: 'center',
-    maxWidth: 300,
-    marginTop: 7,
+    maxWidth: 320,
+    marginTop: 6,
   },
-  badge: {
-    color: C.teal,
+  badgeWrap: {
+    backgroundColor: C.primaryLight,
+    borderColor: '#BED8F0',
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginTop: 10,
+  },
+  badgeText: {
+    color: C.primaryDark,
     fontSize: 11,
-    fontWeight: '700',
-    marginTop: 8,
-    textAlign: 'center',
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
   card: {
     backgroundColor: C.bg,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: C.border,
-    width: '100%',
     padding: 16,
-    marginTop: 20,
-    gap: 14,
+    width: '100%',
+    marginTop: 16,
     shadowColor: C.navy,
     shadowOpacity: 0.04,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
-  cardTitle: { color: C.navy, fontWeight: '800', fontSize: 14, marginBottom: 4 },
-  row: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardTitle: { color: C.navy, fontSize: 15, fontWeight: '800', marginBottom: 12 },
+  scopeIntro: { color: C.muted, fontSize: 12, lineHeight: 17, marginBottom: 12 },
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: 11, marginBottom: 14 },
   rowBody: { flex: 1 },
-  rowTitle: { color: C.navy, fontWeight: '800', fontSize: 13.5 },
-  rowText: { color: C.muted, fontSize: 12, marginTop: 3, lineHeight: 17 },
+  rowTitle: { color: C.navy, fontSize: 13, fontWeight: '700' },
+  rowText: { color: C.muted, fontSize: 12, lineHeight: 17, marginTop: 2 },
 
-  // Standards
   standardRow: {
-    borderTopWidth: 1,
-    borderTopColor: C.border,
-    paddingTop: 11,
-    gap: 3,
+    backgroundColor: '#F5F8FC',
+    borderRadius: 10,
+    padding: 11,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#D8E8F5',
   },
-  standardCat: { color: C.navy, fontWeight: '800', fontSize: 13 },
-  standardStd: { color: C.muted, fontSize: 11.5 },
+  standardCat: { color: C.navy, fontSize: 13, fontWeight: '800' },
+  standardStd: { color: C.muted, fontSize: 11.5, marginTop: 2 },
   schemeBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: C.primaryLight,
+    backgroundColor: '#EAF5FC',
     borderRadius: 6,
     paddingHorizontal: 7,
     paddingVertical: 3,
-    marginTop: 4,
+    alignSelf: 'flex-start',
+    marginTop: 6,
   },
-  schemeText: { color: C.primaryDark, fontSize: 10.5, fontWeight: '700' },
+  schemeText: { color: C.primaryDark, fontSize: 10, fontWeight: '800' },
 
-  // Disclaimer
   disclaimerCard: {
-    backgroundColor: '#F5F8FC',
-    borderRadius: 14,
+    backgroundColor: '#FFFBF0',
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: '#F5E4B5',
+    padding: 16,
     width: '100%',
-    padding: 15,
-    marginTop: 20,
-    borderLeftWidth: 3,
-    borderLeftColor: C.primary,
+    marginTop: 16,
   },
-  disclaimerTitle: { color: C.primaryDark, fontWeight: '800', fontSize: 13, marginBottom: 7 },
-  disclaimerText: { color: C.muted, fontSize: 12, lineHeight: 18 },
+  disclaimerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginBottom: 8,
+  },
+  disclaimerTitle: { color: C.amberDark, fontSize: 13.5, fontWeight: '800' },
+  disclaimerText: { color: '#685419', fontSize: 11.5, lineHeight: 17 },
 
   bisButton: {
     flexDirection: 'row',
@@ -194,8 +241,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: C.primary,
-    borderRadius: 13,
+    borderRadius: 14,
     paddingVertical: 13,
+    paddingHorizontal: 24,
     marginTop: 20,
     width: '100%',
   },
