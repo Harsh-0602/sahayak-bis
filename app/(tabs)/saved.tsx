@@ -45,9 +45,9 @@ const EVIDENCE_CATEGORIES: {
         id: 'is16102',
         category: 'Electrotechnical · Lighting',
         title: 'IS 16102 (Part 1):2026 & IS 16102 (Part 2):2012 — Self-Ballasted LED Lamps',
-        citation: 'BIS LED Series · IS 16102 · Bureau of Indian Standards',
+        citation: 'BIS CRS Registry · IS 16102 · Bureau of Indian Standards',
         summary: 'Part 1:2026 (First Revision) specifies safety requirements (electric shock protection, thermal endurance, insulation resistance). Part 2:2012 specifies performance (wattage, luminous flux, colour temperature, life test).',
-        url: 'https://bis.gov.in/other/LEDSeries.pdf',
+        url: 'https://www.crsbis.in/BIS/products.do',
         status: 'ACTIVE_GAZETTE',
       },
       {

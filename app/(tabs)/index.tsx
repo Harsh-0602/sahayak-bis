@@ -291,6 +291,7 @@ const HALLMARKING_FAQ_URL = 'https://www.bis.gov.in/hallmarking-overview/hallmar
 const BIS_PORTAL_URL = 'https://www.bis.gov.in/';
 const BIS_CARE_URL = 'https://www.bis.gov.in/product-certification/online-information/';
 const MANAKONLINE_URL = 'https://www.manakonline.in/';
+const BIS_CRS_PRODUCTS_URL = 'https://www.crsbis.in/BIS/products.do';
 
 const localSources: Source[] = [
   {
@@ -300,10 +301,10 @@ const localSources: Source[] = [
     summary: 'Official repository of all gazetted Indian Standards, technical committees, and e-application portals.',
   },
   {
-    title: 'Indian Standards on LED (IS 16102)',
-    url: 'https://bis.gov.in/other/LEDSeries.pdf',
-    citation: 'BIS LED Series · IS 16102',
-    summary: 'Official standards covering LED lamps: Safety (IS 16102 Part 1:2026) and Performance (IS 16102 Part 2:2012).',
+    title: 'Indian Standards on LED (IS 16102) & CRS Registry',
+    url: BIS_CRS_PRODUCTS_URL,
+    citation: 'BIS CRS Registry · IS 16102',
+    summary: 'Official BIS Compulsory Registration Scheme portal covering self-ballasted LED lamps under IS 16102.',
   },
   {
     title: 'Gold & Silver Hallmarking Regulations',
@@ -344,8 +345,8 @@ export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
       'उत्पाद पैकेजिंग पर अद्वितीय पंजीकरण संख्या (R-number) के साथ मानक CRS मार्क',
       'इलेक्ट्रॉनिक्स व आईटी सामान अनिवार्य पंजीकरण आदेश के तहत अनिवार्य अनुपालन',
     ],
-    sourceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
-    sourceTitle: 'BIS LED Series Official Standards Directory & BIS LIMS',
+    sourceUrl: BIS_CRS_PRODUCTS_URL,
+    sourceTitle: 'Official BIS CRS Portal — Products Under Compulsory Registration (IS 16102)',
     verifiedDate: 'Active Reference · BIS LIMS / Gazette Notification',
     regulatoryBasis: 'Standards define technical requirements; mandatory certification is enforced separately by statutory order: Electronics & Information Technology Goods (Requirement for Compulsory Registration) Order notified by MeitY, administered under Scheme II (CRS) of BIS (Conformity Assessment) Regulations.',
     regulatoryBasisHi: 'मानक तकनीकी आवश्यकताओं को परिभाषित करते हैं; अनिवार्य प्रमाणन अलग से वैधानिक आदेश द्वारा लागू होता है: इलेक्ट्रॉनिक्स और आईटी सामान (अनिवार्य पंजीकरण) आदेश (MeitY), जो BIS विनियमों की योजना II (CRS) के तहत प्रशासित है।',
@@ -1315,9 +1316,9 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         role: 'assistant',
         text: 'सेल्फ-बैलेस्टेड LED लैंप को CRS के अंतर्गत BIS पंजीकरण की आवश्यकता होती है।',
         answerText: hiAnswer,
-        evidenceTitle: 'BIS LED सीरीज़ व LIMS — आधिकारिक मानक सूची',
+        evidenceTitle: 'BIS CRS पोर्टल — उत्पाद व मानक निर्देशिका',
         evidenceIsNumber: 'IS 16102 (Part 1):2026 · IS 16102 (Part 2):2012',
-        evidenceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
+        evidenceUrl: BIS_CRS_PRODUCTS_URL,
         evidenceDetail: EVIDENCE_DATABASE['IS 16102'],
         nextStep: 'पंजीकरण से पहले उत्पाद की जाँच BIS से मान्यता प्राप्त प्रयोगशाला में की जाती है। प्रमाणन रोडमैप देखने के लिए नीचे का बटन दबाएँ।',
         nextStepUrl: BIS_CARE_URL,
@@ -1326,8 +1327,8 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
           'LED लैंप BIS प्रमाणन रोडमैप देखें',
           'CRS पंजीकरण के लिए आवश्यक दस्तावेज़ क्या हैं?',
         ],
-        citation: 'BIS LED सीरीज़ · IS 16102',
-        sourceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
+        citation: 'BIS CRS पोर्टल · IS 16102',
+        sourceUrl: BIS_CRS_PRODUCTS_URL,
         roadmap: true,
       };
     }
@@ -1344,9 +1345,9 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       role: 'assistant',
       text: 'Self-ballasted LED lamps require BIS registration under CRS.',
       answerText: enAnswer,
-      evidenceTitle: 'BIS LED Series & LIMS — Official Standards List',
+      evidenceTitle: 'Official BIS CRS Portal — Standards & Product Directory',
       evidenceIsNumber: 'IS 16102 (Part 1):2026 · IS 16102 (Part 2):2012',
-      evidenceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
+      evidenceUrl: BIS_CRS_PRODUCTS_URL,
       evidenceDetail: EVIDENCE_DATABASE['IS 16102'],
       nextStep: 'View the step-by-step compliance roadmap for LED lamps, or proceed to the official BIS CRS portal to start your application.',
       nextStepUrl: BIS_CARE_URL,
@@ -1355,8 +1356,8 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
         'LED bulb BIS certification roadmap',
         'What documents are needed for CRS registration?',
       ],
-      citation: 'BIS LED Series · IS 16102',
-      sourceUrl: 'https://bis.gov.in/other/LEDSeries.pdf',
+      citation: 'BIS CRS Registry · IS 16102',
+      sourceUrl: BIS_CRS_PRODUCTS_URL,
       roadmap: true,
     };
   }

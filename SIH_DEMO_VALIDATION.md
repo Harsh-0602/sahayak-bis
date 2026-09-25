@@ -13,7 +13,7 @@
 
 | Flow ID | Query / Action | Key Verifications | Result |
 |---|---|---|---|
-| **A. FIND STANDARD** | *"What is the BIS standard for self-ballasted LED lamps?"* | • Returns IS 16102 (Part 1: Safety & Part 2: Performance)<br>• Evidence Card displays `[CRS · Compulsory Registration]` badge<br>• Tapping "Evidence Details" opens Evidence Drawer showing issuing authority (BIS), scope, and requirements<br>• "Official BIS Source" link points to official PDF (`https://bis.gov.in/other/LEDSeries.pdf`) | **PASS** |
+| **A. FIND STANDARD** | *"What is the BIS standard for self-ballasted LED lamps?"* | • Returns IS 16102 (Part 1: Safety & Part 2: Performance)<br>• Evidence Card displays `[CRS · Compulsory Registration]` badge<br>• Tapping "Evidence Details" opens Evidence Drawer showing issuing authority (BIS), scope, and requirements<br>• "Official BIS Source" link points to official CRS directory (`https://www.crsbis.in/BIS/products.do`) | **PASS** |
 | **B. BIS REQUIREMENT** | *"Is BIS certification required for LED lamps?"* | • Explains mandatory CRS registration requirements under MeitY/BIS order<br>• States testing must occur at a BIS-recognized lab before portal submission<br>• Does NOT equate standard formulation with mandatory certification without official CRS basis | **PASS** |
 | **C. ROADMAP** | *"Show me the BIS compliance roadmap for LED lamps."* | • "View Certification Roadmap" button triggers interactive 5-step modal<br>• Steps 01 to 05 cover identification, CRS status, lab testing, documentation, and portal registration<br>• Indicative timelines (`10–15 days*`, `3–5 days*`) include explicit asterisks and official disclaimer | **PASS** |
 | **D. GOLD / HUID** | *"How can I verify gold jewellery?"* | • Correctly cites 3 mandatory marks: 1) BIS Logo, 2) Purity/Fineness grade (e.g., 22K916), 3) 6-digit alphanumeric HUID<br>• Notes mandatory status under Hallmarking QCO in notified districts<br>• Links to BIS CARE mobile app ("Verify HUID" feature) | **PASS** |
@@ -28,7 +28,7 @@
 
 | Portal / Document | URL | Verified Status |
 |---|---|---|
-| **BIS LED Standards Directory** | `https://bis.gov.in/other/LEDSeries.pdf` | **LIVE & ACTIVE** (Accessible PDF) |
+| **BIS CRS Products Directory (LED)** | `https://www.crsbis.in/BIS/products.do` | **LIVE & ACTIVE** (HTTP 200) |
 | **BIS Product Certification Portal** | `https://www.bis.gov.in/product-certification/online-information/` | **LIVE & ACTIVE** (HTTP 200) |
 | **Gold & Silver Hallmarking FAQs** | `https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en` | **LIVE & ACTIVE** (HTTP 200) |
 | **Consumer Protection & HUID** | `https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en` | **LIVE & ACTIVE** (HTTP 200) |

@@ -50,7 +50,7 @@ CREATE POLICY "public cannot remove sources" ON public.sahayakbis_sources
   FOR DELETE TO anon, authenticated USING (false);
 
 INSERT INTO public.sahayakbis_sources (title, url, category, citation, summary) VALUES
-  ('Indian Standards on LED', 'https://bis.gov.in/other/LEDSeries.pdf', 'electronics', 'BIS LED Series · IS 16102', 'Official list of Indian Standards for LED lamps, modules, control gear, measurements and luminaires.'),
+  ('Indian Standards on LED (IS 16102) & CRS Registry', 'https://www.crsbis.in/BIS/products.do', 'electronics', 'BIS CRS Registry · IS 16102', 'Official list of Indian Standards for LED lamps, modules, control gear, measurements and luminaires under CRS.'),
   ('Gold & Silver Hallmarking FAQs', 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en', 'hallmarking', 'BIS Gold & Silver · HUID', 'Official guidelines and FAQs for gold (IS 1417) and silver (IS 2112) purity, HUID verification, and assaying centres.'),
   ('Consumer protection', 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en', 'hallmarking', 'BIS Consumer Protection', 'Official guidance on using BIS CARE to verify a hallmarked gold jewellery item with its HUID.'),
   ('Product certification', 'https://www.bis.gov.in/product-certification/online-information/', 'general', 'BIS Product Certification', 'BIS information for manufacturers and applicants about product certification and online services.')

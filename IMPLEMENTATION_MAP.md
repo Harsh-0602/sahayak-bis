@@ -38,7 +38,7 @@
 - Reorganize sources into two logical sections:
   1. **Industry Compliance & Registration Portals:**
      - *BIS Product Certification Online Information* (`https://www.bis.gov.in/product-certification/online-information/`)
-     - *Indian Standards on LED Series (IS 16102 Directory)* (`https://bis.gov.in/other/LEDSeries.pdf`)
+     - *Official BIS CRS Portal — Products Under Compulsory Registration (IS 16102)* (`https://www.crsbis.in/BIS/products.do`)
   2. **Consumer Protection & Verification Services:**
      - *Gold & Silver Hallmarking FAQs (IS 1417 & IS 2112)* (`https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en`)
      - *Consumer Protection & HUID Verification (BIS CARE)* (`https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en`)
