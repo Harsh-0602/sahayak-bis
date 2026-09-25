@@ -1,6 +1,6 @@
 import React from 'react';
 import { Linking, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AlertCircle, Award, CheckCircle2, ChevronRight, ExternalLink, Factory, Globe2, Layers, ShieldCheck, Sparkles, UserCheck } from 'lucide-react-native';
+import { Award, CheckCircle2, ChevronRight, ExternalLink, Factory, Globe2, Layers, ShieldCheck, Sparkles, UserCheck } from 'lucide-react-native';
 
 const C = {
   primary: '#0070C0',
@@ -34,7 +34,7 @@ export default function ProfileScreen() {
           A conversational AI system designed to democratize access to 20,000+ Indian Standards, simplify conformity assessment for Indian MSMEs, and protect citizens.
         </Text>
         <View style={styles.badgeWrap}>
-          <Text style={styles.badgeText}>Grand Finale Architecture · Smart India Hackathon 2026</Text>
+          <Text style={styles.badgeText}>Evidence-Grounded BIS Architecture</Text>
         </View>
 
         {/* 1. Value Proposition for All Stakeholders */}
@@ -130,14 +130,14 @@ export default function ProfileScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Implementation vs Production Architecture</Text>
           <Text style={styles.tableIntro}>
-            Honest engineering comparison between the current Grand Finale prototype and the target national production deployment:
+            Honest engineering comparison between the current pilot deployment and the target national scale deployment:
           </Text>
 
           <View style={styles.table}>
             {/* Table Header */}
             <View style={styles.tableHeaderRow}>
               <Text style={[styles.tableColHeader, { flex: 1.1 }]}>DIMENSION</Text>
-              <Text style={[styles.tableColHeader, { flex: 1.4 }]}>SIH PROTOTYPE</Text>
+              <Text style={[styles.tableColHeader, { flex: 1.4 }]}>CURRENT PILOT</Text>
               <Text style={[styles.tableColHeader, { flex: 1.5 }]}>PRODUCTION TARGET</Text>
             </View>
 
@@ -176,21 +176,6 @@ export default function ProfileScreen() {
               <Text style={[styles.tableCellProd, { flex: 1.5 }]}>Direct API sync with Manakonline, LIMS, and BIS CARE services</Text>
             </View>
           </View>
-        </View>
-
-        {/* 4. Statutory Disclaimer */}
-        <View style={styles.disclaimerCard}>
-          <View style={styles.disclaimerHeader}>
-            <AlertCircle color={C.amberDark} size={18} />
-            <Text style={styles.disclaimerTitle}>Statutory Authority Disclaimer</Text>
-          </View>
-          <Text style={styles.disclaimerText}>
-            SahayakBIS is an advisory AI companion developed as an academic and technological prototype for Smart India Hackathon 2026.
-            {'\n\n'}
-            SahayakBIS is NOT an official government authority, conformity assessment body, or testing laboratory. The Bureau of Indian Standards (BIS), established under the BIS Act, 2016, remains the sole statutory authority for Indian Standards, certification, and licensing.
-            {'\n\n'}
-            All official filings must be completed on Manakonline or the BIS CRS Portal. Consumer verification is performed on the official BIS CARE mobile application.
-          </Text>
         </View>
 
         {/* Official BIS Gateway */}
@@ -344,23 +329,6 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     fontWeight: '600',
   },
-  disclaimerCard: {
-    backgroundColor: '#FFFBF0',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#F5E4B5',
-    padding: 14,
-    width: '100%',
-    marginTop: 14,
-  },
-  disclaimerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    marginBottom: 8,
-  },
-  disclaimerTitle: { color: C.amberDark, fontSize: 13, fontWeight: '800' },
-  disclaimerText: { color: '#685419', fontSize: 11, lineHeight: 16.5 },
   bisButton: {
     flexDirection: 'row',
     alignItems: 'center',

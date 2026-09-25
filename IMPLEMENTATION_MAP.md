@@ -55,7 +55,7 @@
     - *"What is IS 2112 for silver?"*
     - *"सोने की हॉलमार्किंग और HUID कैसे जाँचें?"*
     - *"Can you guarantee that my product is BIS compliant?"*
-  - Clear explanation: *"In this SIH prototype, session inquiries are retained in-memory for live judging."*
+  - Clear explanation: *"In this prototype, session inquiries are retained in-memory for the active session."*
 
 ### 1.4 `app/(tabs)/profile.tsx` (Profile / About Tab)
 - Update "About SahayakBIS" section:

@@ -1,5 +1,5 @@
 # SahayakBIS 🇮🇳
-> **Standards made simple** — An AI-powered, source-grounded assistant for Indian Standards (BIS), Certification Roadmaps, and Hallmarking Verification. Built for Smart India Hackathon (SIH 2026).
+> **Standards made simple** — An AI-powered, source-grounded assistant for Indian Standards (BIS), Certification Roadmaps, and Hallmarking Verification.
 
 ---
 
@@ -10,7 +10,7 @@
 
 ## ✨ Key Features
 - **💡 LED Bulbs & Luminaires (IS 16102)**:
-  - Covers Safety (Part 1:2012) and Performance (Part 2:2012) requirements under the Compulsory Registration Scheme (CRS).
+  - Covers Safety (Part 1:2026) and Performance (Part 2:2012) requirements under the Compulsory Registration Scheme (CRS).
   - **Interactive Certification Roadmap**: Step-by-step guidance from lab testing to portal registration with estimated timeline (20–30 working days).
 - **🪙 Gold Hallmarking & HUID (IS 1417)**:
   - Explains the three mandatory hallmark signs: BIS logo, Purity/Fineness grade (24K, 22K916, 18K750, 14K585), and 6-digit alphanumeric HUID.
@@ -64,4 +64,4 @@ Open [http://localhost:8081](http://localhost:8081) in your browser.
 ---
 
 ## 📄 License
-Prototype developed for Smart India Hackathon (SIH 2026).
+Open-source reference implementation for Bureau of Indian Standards (BIS) conversational intelligence.

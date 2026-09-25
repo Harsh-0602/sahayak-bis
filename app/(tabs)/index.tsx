@@ -256,57 +256,19 @@ type SuggestedPrompt = {
 };
 
 export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
-  // ── General BIS Product Capabilities (First) ──
-  {
-    id: 'p_find_std',
-    label: 'Find applicable BIS standard',
-    labelHi: 'लागू BIS मानक खोजें',
-    query: 'How do I find the applicable BIS standard for my product?',
-    queryHi: 'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
-  },
-  {
-    id: 'p_check_req',
-    label: 'Check whether BIS applies',
-    labelHi: 'BIS आवश्यकता जाँचें',
-    query: 'How can I check whether a BIS requirement applies?',
-    queryHi: 'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
-  },
-  {
-    id: 'p_testing_info',
-    label: 'Find BIS testing information',
-    labelHi: 'BIS परीक्षण जानकारी खोजें',
-    query: 'How can I find the relevant testing information?',
-    queryHi: 'परीक्षण संबंधी जानकारी कैसे प्राप्त करें?',
-  },
-  {
-    id: 'p_roadmap',
-    label: 'Build BIS compliance roadmap',
-    labelHi: 'BIS अनुपालन रोडमैप बनाएं',
-    query: 'Show me how to build a BIS compliance roadmap.',
-    queryHi: 'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
-  },
-  {
-    id: 'p_services',
-    label: 'Explore BIS services',
-    labelHi: 'BIS सेवाएं देखें',
-    query: 'What are the key official BIS services and portals?',
-    queryHi: 'प्रमुख आधिकारिक BIS सेवाएं और पोर्टल कौन से हैं?',
-  },
-
-  // ── Representative Evidence Demonstrations ──
-  {
-    id: 'p_huid_work',
-    label: 'How does HUID verification work?',
-    labelHi: 'HUID सत्यापन कैसे काम करता है?',
-    query: 'How do I verify a 6-digit HUID on gold jewellery?',
-    queryHi: 'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
-  },
   {
     id: 'p_led_std',
-    label: 'What is the LED lamp standard?',
-    labelHi: 'LED लैंप मानक क्या है?',
+    label: 'LED lamp standard (IS 16102)',
+    labelHi: 'LED लैंप मानक (IS 16102)',
     query: 'Which BIS standard applies to LED bulbs?',
     queryHi: 'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
+  },
+  {
+    id: 'p_huid_work',
+    label: 'Verify 6-digit gold HUID',
+    labelHi: '6-अंकीय स्वर्ण HUID जाँचें',
+    query: 'How do I verify a 6-digit HUID on gold jewellery?',
+    queryHi: 'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
   },
   {
     id: 'p_22k916',
@@ -1679,8 +1641,15 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      {/* ── End-to-End Workflow Visualization ── */}
-      <View style={styles.workflowStrip}>
+      {/* ── Main Unified Scrollable Area ── */}
+      <ScrollView
+        ref={scrollRef}
+        style={styles.mainScroll}
+        contentContainerStyle={styles.mainScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── End-to-End Workflow Visualization ── */}
+        <View style={styles.workflowStrip}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.workflowStripContent}>
           <View style={styles.workflowStep}>
             <Text style={styles.workflowNum}>01</Text>
@@ -1845,11 +1814,7 @@ export default function ExploreScreen() {
       </View>
 
       {/* ── Message List ── */}
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.content}>
         <View style={styles.datePill}>
           <Text style={styles.dateText}>
             {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -2131,7 +2096,8 @@ export default function ExploreScreen() {
           </Text>
           <ChevronRight color={C.teal} size={14} />
         </Pressable>
-      </ScrollView>
+      </View>
+    </ScrollView>
 
       {/* ── Compact Follow-up Composer (Active Conversation State Only) ── */}
       {hasUserQueries && (
@@ -2769,6 +2735,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 11,
   },
+
+  // Unified Scroll
+  mainScroll: { flex: 1 },
+  mainScrollContent: { flexGrow: 1, paddingBottom: 24 },
 
   // Messages
   content: { paddingHorizontal: 14, paddingBottom: 24, paddingTop: 6 },
