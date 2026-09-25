@@ -3,89 +3,92 @@
 **Audience**: SIH Evaluators / Grand Finale Jury  
 **Duration**: 3–5 Minutes  
 **Live Prototype URL**: `http://localhost:8082`  
-**Core Motto**: *"Safe Guidance Grounded in Official BIS Evidence"*
+**Core Motto**: *"National Standards & Conformity Intelligence — Grounded in Official BIS Evidence"*
 
 ---
 
 ## 🎯 1. 30-Second Elevator Pitch (The Hook)
 
-> *"Good morning respected evaluators. Navigating Indian Standards has traditionally been fragmented across technical PDFs, gazette notifications, and complex ministerial portals. Small manufacturers struggle to know which standard applies and whether certification is mandatory, while consumers often don't understand the hallmarks stamped on their jewellery.*
+> *"Good morning respected evaluators. Navigating Indian Standards has traditionally been fragmented across 20,000+ technical documents, Gazette notifications, ministerial Quality Control Orders, and multiple portals. MSMEs struggle to identify applicable standards and understand mandatory certification requirements, while citizens struggle to verify hallmarking or report non-compliance.
 >
-> *Introducing **SahayakBIS** — a conversational AI guidance layer built to make Indian Standards and BIS conformity accessible, trustworthy, and verifiable. Unlike generic LLMs that hallucinate standards or invent compliance certificates, SahayakBIS operates under a strict **Evidence Gate**: if a claim cannot be verified against official BIS gazette or standard documents, the system refuses to speculate."*
+> Introducing **SahayakBIS** — a national conversational intelligence layer designed to democratize access to Indian Standards and BIS services.
+>
+> What makes SahayakBIS unique is our **Evidence Gate Architecture**: every response is strictly bounded by verified Gazette notifications, standard documents, and ministerial orders. If verified evidence is not available, the system safely abstains rather than hallucinating regulatory claims."*
 
 ---
 
 ## ⏱️ 2. The 3–5 Minute Step-by-Step Demo Flow
 
-### 🎬 ACT 1: Industry Pilot — MSME Compliance (1.5 Mins)
+### 🎬 ACT 1: National Product Positioning & Workflow (45 Seconds)
 
-1. **Screen**: Open Home Tab (`/`). Point out the **Pilot Scope Banner**:
-   - *Key Talking Point*: *"Notice our pilot boundary: we explicitly declare our scope across Industry and Consumer domains, avoiding inflated claims."*
-2. **Action**: Tap the query chip: **`IS 16102 (LED Lamp Standard)`** (or type *"What is the BIS standard for self-ballasted LED lamps?"*).
-   - Observe the **4-Stage Loading Animation** (*Scanning BIS Catalogue → Verifying Legal Orders → Extracting Technical Clauses → Synthesizing Safe Guidance*).
-   - *Key Talking Point*: *"Every response breaks down into Answer → Official Evidence → Next Actionable Step."*
-3. **Action**: Tap **`[Review Citation & Scope]`** on the Evidence Card.
-   - **Showcase the Dual-Panel Evidence Drawer**:
-     - **Panel 1 (Technical Specification)**: Points to IS 16102 (Part 1):2026 (Safety, First Revision) & Part 2:2012 (Performance).
-     - **Panel 2 (Regulatory Legal Basis)**: Points to MeitY Electronics and IT Goods (Compulsory Registration) Order, CRS Scheme II.
-   - *Key Talking Point*: *"Generic AI confuses a voluntary technical standard with a mandatory legal requirement. SahayakBIS clearly isolates the standard from the statutory order that enforces it."*
-4. **Action**: Tap **`LED 5-Step Compliance Roadmap`** (or Next Step link).
-   - **Showcase the 5-Stage Interactive Roadmap**:
-     - Stage 1: Standard Identification
-     - Stage 2: BIS-Recognized Lab Testing
-     - Stage 3: CRS Portal Submission
-     - Stage 4: Scrutiny & Grant of Registration
-     - Stage 5: Standard Mark & Labeling
-   - *Key Talking Point*: *"This gives MSMEs an end-to-end operational roadmap with realistic timeframes."*
+1. **Screen**: Open Home Tab (`/`). Point out:
+   - **Product Header**: *SahayakBIS — National Standards & Conformity Intelligence*
+   - **End-to-End Workflow Visualization Strip**:
+     `[ 01 ASK ] ➔ [ 02 UNDERSTAND ] ➔ [ 03 FIND ] ➔ [ 04 VERIFY ] ➔ [ 05 GUIDANCE ] ➔ [ 06 OFFICIAL SOURCE ]`
+   - *Key Talking Point*: *"SahayakBIS covers the full standards lifecycle — from discovering applicable Indian Standards to understanding mandatory orders, lab testing, and official portal filing."*
+2. **Show Core Capabilities**:
+   - 5 Product Capabilities: *Find My Standard*, *Check BIS Requirement*, *Build Compliance Roadmap*, *Verify / Understand*, and *Explore BIS Services*.
+3. **Show Trust Framework**:
+   - Highlight the **Evidence-Backed Trust Framework**: *"No sufficient verified evidence → No definitive compliance claim."*
+   - Point out the transparent declaration: *"Current Prototype Evidence Coverage"* showcasing the connected representative slices.
 
 ---
 
-### 🎬 ACT 2: Consumer Protection Pilot — Hallmarking & Trust (1 Min)
+### 🎬 ACT 2: Industry Compliance & Evidence Grounding (1.5 Minutes)
 
-1. **Action**: Tap the consumer query chip: **`Gold Hallmarking & HUID Breakdown`** (or type *"What does the hallmark on gold jewellery mean?"*).
-   - **Showcase**: The 3 official marks:
-     1. BIS Standard Logo
-     2. Purity / Fineness (e.g. 22K916)
-     3. 6-Digit Alphanumeric HUID (Hallmark Unique Identification)
-   - *Key Talking Point*: *"We also draw a clear boundary between advisory education and real-time verification: SahayakBIS explains the marks and cites IS 1417, but directs consumers to the official BIS CARE app for real-time HUID database lookups."*
-2. **Action**: Tap **`22K916 Meaning & Purity Table`**.
-   - Show how the system explains 91.6% pure gold alloyed with 8.4% metals per IS 1417:2016.
+1. **Action**: Tap **`LED Lamp Standard (IS 16102)`** (or ask *"Which BIS standard applies to LED bulbs?"*).
+2. **Observe**:
+   - Animated loading pipeline: *Understanding query → Finding relevant BIS evidence → Checking source status → Preparing grounded answer*.
+   - Structured response: **Answer ➔ Evidence Card ➔ Next Step Action**.
+   - Note the verified citation: **IS 16102 (Part 1):2026** (Safety Requirements, First Revision) & **IS 16102 (Part 2):2012** (Performance Requirements).
+3. **Action**: Tap **`[View Evidence Details]`** to open the Evidence Drawer:
+   - **Panel 1 (Technical Specification)**: Technical scope, mandatory safety test parameters (insulation, shock protection, thermal endurance).
+   - **Panel 2 (Regulatory Legal Basis)**: Statutory order (MeitY Electronics & IT Goods Order), Scheme-II (CRS), and official BIS source link.
+   - *Key Talking Point*: *"Notice that we strictly distinguish the voluntary technical standard from the mandatory statutory order that enforces it."*
+4. **Action**: Tap **`LED Compliance Roadmap`**:
+   - Opens the 5-stage conformity roadmap: *Identify Standard ➔ Scheme Check ➔ Lab Testing at BIS-Recognized Lab ➔ Document Preparation ➔ Portal Filing via CRS*.
 
 ---
 
-### 🎬 ACT 3: AI Safety & Boundary Defense (1 Min)
+### 🎬 ACT 3: Citizen Protection & Precious Metals (1 Minute)
 
-1. **Action**: Type or select from History:
-   > *"Can you certify my LED lamp or guarantee BIS approval?"*
+1. **Action**: Tap **`Gold Hallmarking & HUID`** (or ask *"How do I verify a 6-digit HUID on gold jewellery?"*).
 2. **Showcase**:
-   - The immediate **Safety Refusal**:
-     - Explains SahayakBIS is an AI advisory companion.
-     - Reaffirms that the **Bureau of Indian Standards is the sole statutory certification body** under the BIS Act, 2016.
-     - Neither this AI nor any third-party tool can grant certificates or guarantee approvals.
-   - *Key Talking Point*: *"This prevents regulatory liability and deceptive commercial claims."*
-3. **Action**: Tap the **`[हि]`** Language Toggle in the header.
-   - Show instant translation into pure Devanagari Hindi across the entire interface (headers, scope banner, query chips, drawer, and guidance cards).
-4. **Action**: (Optional if asked) Type a Hinglish query: *"LED bulb ke liye BIS certificate kaise milega?"*
-   - Show the Hinglish rejection banner instructing the user to choose pure Hindi or English.
+   - The 3 mandatory hallmarking marks:
+     1. BIS Logo
+     2. Purity & Fineness grade (e.g. 22K916 per IS 1417:2016)
+     3. 6-digit laser-engraved alphanumeric HUID
+   - *Key Talking Point*: *"SahayakBIS educates citizens on standards, but enforces statutory authority boundaries by directing consumers to the official BIS CARE app for real-time verification."*
+3. **Action**: Tap **`22K916 Meaning & Purity`**:
+   - Explains 22 Karat (91.6% pure gold) and displays the fineness breakdown.
 
 ---
 
-### 🎬 ACT 4: Trust Architecture & Extensibility (30 Secs)
+### 🎬 ACT 4: AI Safety, Safe Abstention & Language Guardrails (1 Minute)
 
-1. **Action**: Tap the **Sources Tab (`/saved`)**:
-   - Show organized primary sources: Industry (IS 16102, CRS Portal) & Consumer (IS 1417, IS 2112, BIS CARE).
-2. **Action**: Tap the **About Tab (`/profile`)**:
-   - Show the Hackathon Companion positioning, 4 Core Principles (Evidence Gate, Separation of Standard vs Order, Strict Safety, Grounded Truth), and Statutory Disclaimer.
-3. **Closing Statement**:
-   > *"SahayakBIS is designed as an extensible reference architecture for the Department of Consumer Affairs and BIS. It solves citizen confusion, boosts MSME ease of doing business, and eliminates AI hallucinations through strict evidence grounding. Thank you!"*
+1. **Adversarial Guarantee Defense**:
+   - Ask: *"Can you guarantee that my product is BIS compliant?"*
+   - **Showcase**: Immediate safe abstention. Explains that SahayakBIS is an advisory AI companion; only BIS and accredited laboratories have statutory authority to test and certify.
+2. **Hinglish Rejection**:
+   - Type: *"LED bulb ke liye BIS certificate kaise milega?"*
+   - **Showcase**: Language guardrail rejects colloquial Hinglish, guiding the user to choose formal Devanagari Hindi or English.
+3. **Bilingual Localization**:
+   - Tap **`हि`** in the header. The entire UI transforms into formal Devanagari Hindi (*राष्ट्रीय मानक एवं अनुरूपता आसूचना*).
 
 ---
 
-## ⚡ 3. Quick-Response Cheatsheet for Judges' Questions
+### 🎬 ACT 5: Architecture, Evidence Library & Scale (45 Seconds)
 
-| Judge Question | Winning Response |
-|:---|:---|
-| *"Is this just a wrapper around ChatGPT?"* | *"No, sir/ma'am. Standard LLMs hallucinate non-existent IS numbers and falsely claim products are mandatory when they are voluntary. SahayakBIS implements a strict Evidence Gate architecture where every claim is validated against indexed BIS gazettes and technical standards before generation. Without verified evidence, the system abstains safely."* |
-| *"Can you verify any product in India?"* | *"This prototype demonstrates a high-depth pilot covering both an Industry domain (LED Lamps under IS 16102 and CRS) and Consumer domain (Gold IS 1417 and Silver IS 2112). The underlying schema is designed to scale across all 20,000+ Indian Standards as BIS expands its digital gazette APIs."* |
-| *"Can someone use this to fake BIS approval?"* | *"Absolutely not. As demonstrated in our safety refusal, the system explicitly informs users that SahayakBIS has no certification power and that only BIS officers and authorized labs under the BIS Act, 2016 can grant licenses or registrations."* |
-| *"Why reject Hinglish?"* | *"In technical regulatory compliance, mixed colloquial language introduces severe ambiguity in legal terms (e.g. 'registration' vs 'certification' vs 'license'). To ensure 100% legal accuracy, we support rigorous Devanagari Hindi and English."* |
+1. **Tab 2 — BIS Evidence Library (`/saved`)**:
+   - Point out functional organization: *Standards Specifications*, *Regulatory Orders (QCO/CRO)*, *Conformity Assessment Schemes*, and *Digital Services (Manakonline & BIS CARE)*.
+2. **Tab 3 — Query History & Workflows (`/history`)**:
+   - Organized across the 5 lifecycle stages from scoping to authority boundaries.
+3. **Tab 4 — About SahayakBIS (`/profile`)**:
+   - **Universal Value Proposition** (MSMEs, Consumers, Regulators).
+   - **Implementation vs Production Architecture Table**: Transparently explains the journey from the SIH verified prototype slice to the full 20,000+ standards production system with pgvector and automated gazette ingestion.
+
+---
+
+## 🏆 Summary Closing Statement for Judges
+
+> *"SahayakBIS proves that conversational AI in government and regulatory domains must be built on verifiable evidence, explicit authority boundaries, and zero hallucination. We have demonstrated a complete, credible slice of this national intelligence platform for SIH 2026."*

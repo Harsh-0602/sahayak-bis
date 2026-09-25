@@ -1,6 +1,8 @@
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Linking, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronRight, Clock3, ShieldCheck, Sparkles, Zap } from 'lucide-react-native';
+import { Clock3, ExternalLink, MessageSquare, RotateCcw, Search, ShieldCheck, Sparkles, Trash2 } from 'lucide-react-native';
+import { clearHistory, getHistory, HistoryItem, subscribeHistory } from '@/lib/historyStore';
 
 const C = {
   primary: '#0070C0',
@@ -15,172 +17,155 @@ const C = {
   border: '#B7D3EA',
   amber: '#E3A62F',
   amberDark: '#9D6E00',
-  green: '#43A982',
+  green: '#1E7E34',
+  red: '#DC2626',
 };
 
-type DemoQuery = {
-  query: string;
-  category: 'industry' | 'consumer' | 'safety';
-  categoryLabel: string;
-  description: string;
-};
-
-const DEMO_QUERIES: DemoQuery[] = [
-  {
-    query: 'Which BIS standard applies to LED bulbs?',
-    category: 'industry',
-    categoryLabel: 'Industry · Standard Discovery',
-    description: 'Returns IS 16102 (Part 1):2026 & (Part 2):2012, CRS scheme, and lab testing parameters.',
-  },
-  {
-    query: 'Is BIS certification required for LED lamps?',
-    category: 'industry',
-    categoryLabel: 'Industry · CRS Requirement',
-    description: 'Grounds mandatory requirement under Electronics & IT Goods Order.',
-  },
-  {
-    query: 'Show me the BIS compliance roadmap for LED lamps.',
-    category: 'industry',
-    categoryLabel: 'Industry · Milestone Roadmap',
-    description: 'Interactive 5-stage certification roadmap from lab testing to R-number grant.',
-  },
-  {
-    query: 'How do I verify a 6-digit HUID on gold jewellery?',
-    category: 'consumer',
-    categoryLabel: 'Consumer · HUID Verification',
-    description: 'Explains the 3 mandatory marks and directs consumer to official BIS CARE app.',
-  },
-  {
-    query: 'What does 22K916 mean?',
-    category: 'consumer',
-    categoryLabel: 'Consumer · Fineness Explanation',
-    description: 'Details 6 fineness grades and parts-per-thousand purity under IS 1417:2016.',
-  },
-  {
-    query: 'What are the silver hallmarking standards (IS 2112)?',
-    category: 'consumer',
-    categoryLabel: 'Consumer · Silver Hallmarking',
-    description: 'Explains IS 2112, 6 fineness grades, voluntary scheme status, and purity assurance.',
-  },
-  {
-    query: 'Can you guarantee that my product is BIS compliant?',
-    category: 'safety',
-    categoryLabel: 'Safety · Adversarial Abstention',
-    description: 'Refuses guarantee, clarifies SahayakBIS advisory scope vs BIS sole authority.',
-  },
-  {
-    query: 'I make electric blankets, what BIS standard applies?',
-    category: 'safety',
-    categoryLabel: 'Safety · Out of Pilot Scope',
-    description: 'Explains pilot scope limits and directs user to official BIS Standards Directory.',
-  },
-];
+function formatTimestamp(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (isToday) return `Today at ${timeStr}`;
+  return `${d.toLocaleDateString([], { day: 'numeric', month: 'short' })} at ${timeStr}`;
+}
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+
+  useEffect(() => {
+    // Initial fetch
+    setHistoryItems(getHistory());
+    // Subscribe to live updates as the user searches in the home tab
+    const unsubscribe = subscribeHistory((items) => {
+      setHistoryItems([...items]);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.icon}>
-            <Clock3 color="#E3A62F" size={22} />
+            <Clock3 color="#E3A62F" size={22} strokeWidth={2.2} />
           </View>
-          <View>
-            <Text style={styles.eyebrow}>EVALUATOR QUICK-START</Text>
-            <Text style={styles.title}>Demonstration Queries</Text>
-          </View>
-        </View>
-
-        <Text style={styles.subtitle}>
-          Select any verified golden test case below to inspect SahayakBIS evidence grounding,
-          roadmaps, consumer guidance, and safe abstention.
-        </Text>
-
-        {/* Industry Group */}
-        <View style={styles.sectionHeaderRow}>
-          <View style={[styles.sectionDot, { backgroundColor: C.primary }]} />
-          <Text style={styles.sectionHeaderText}>INDUSTRY PILOT (LED · IS 16102)</Text>
-        </View>
-
-        {DEMO_QUERIES.filter((q) => q.category === 'industry').map((item, idx) => (
-          <Pressable
-            key={idx}
-            onPress={() => router.replace('/')}
-            style={styles.queryCard}
-            accessibilityRole="button"
-            accessibilityLabel={`Test: ${item.query}`}
-          >
-            <View style={styles.queryCardTop}>
-              <View style={styles.queryCategoryPill}>
-                <Text style={styles.queryCategoryText}>{item.categoryLabel}</Text>
-              </View>
-              <ChevronRight color={C.primary} size={15} />
-            </View>
-            <Text style={styles.queryTitle}>"{item.query}"</Text>
-            <Text style={styles.queryDesc}>{item.description}</Text>
-          </Pressable>
-        ))}
-
-        {/* Consumer Group */}
-        <View style={[styles.sectionHeaderRow, { marginTop: 14 }]}>
-          <View style={[styles.sectionDot, { backgroundColor: C.amberDark }]} />
-          <Text style={[styles.sectionHeaderText, { color: C.amberDark }]}>CONSUMER PROTECTION (GOLD & SILVER)</Text>
-        </View>
-
-        {DEMO_QUERIES.filter((q) => q.category === 'consumer').map((item, idx) => (
-          <Pressable
-            key={idx}
-            onPress={() => router.replace('/')}
-            style={[styles.queryCard, styles.queryCardConsumer]}
-            accessibilityRole="button"
-            accessibilityLabel={`Test: ${item.query}`}
-          >
-            <View style={styles.queryCardTop}>
-              <View style={[styles.queryCategoryPill, styles.queryCategoryPillConsumer]}>
-                <Text style={[styles.queryCategoryText, { color: C.amberDark }]}>{item.categoryLabel}</Text>
-              </View>
-              <ChevronRight color={C.amberDark} size={15} />
-            </View>
-            <Text style={styles.queryTitle}>"{item.query}"</Text>
-            <Text style={styles.queryDesc}>{item.description}</Text>
-          </Pressable>
-        ))}
-
-        {/* Safety & Abstention Group */}
-        <View style={[styles.sectionHeaderRow, { marginTop: 14 }]}>
-          <View style={[styles.sectionDot, { backgroundColor: C.teal }]} />
-          <Text style={[styles.sectionHeaderText, { color: C.teal }]}>SAFETY & SAFE ABSTENTION</Text>
-        </View>
-
-        {DEMO_QUERIES.filter((q) => q.category === 'safety').map((item, idx) => (
-          <Pressable
-            key={idx}
-            onPress={() => router.replace('/')}
-            style={styles.queryCard}
-            accessibilityRole="button"
-            accessibilityLabel={`Test: ${item.query}`}
-          >
-            <View style={styles.queryCardTop}>
-              <View style={[styles.queryCategoryPill, { backgroundColor: '#E8F5F5' }]}>
-                <Text style={[styles.queryCategoryText, { color: C.teal }]}>{item.categoryLabel}</Text>
-              </View>
-              <ChevronRight color={C.teal} size={15} />
-            </View>
-            <Text style={styles.queryTitle}>"{item.query}"</Text>
-            <Text style={styles.queryDesc}>{item.description}</Text>
-          </Pressable>
-        ))}
-
-        {/* Evidence Gate Banner */}
-        <View style={styles.gateNotice}>
-          <ShieldCheck color={C.primaryDark} size={16} />
           <View style={{ flex: 1 }}>
-            <Text style={styles.gateTitle}>Evidence Gate Guarantee</Text>
+            <Text style={styles.eyebrow}>USER SEARCH HISTORY</Text>
+            <Text style={styles.title}>Search History</Text>
+            <Text style={styles.subtitle}>
+              {historyItems.length === 0
+                ? 'Your asked questions and verified BIS answers will appear here.'
+                : `${historyItems.length} ${historyItems.length === 1 ? 'query' : 'queries'} recorded in your active session.`}
+            </Text>
+          </View>
+
+          {historyItems.length > 0 && (
+            <Pressable
+              onPress={() => clearHistory()}
+              style={styles.clearButton}
+              accessibilityRole="button"
+              accessibilityLabel="Clear history"
+            >
+              <Trash2 color={C.red} size={14} />
+              <Text style={styles.clearButtonText}>Clear</Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* Empty State */}
+        {historyItems.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <View style={styles.emptyIconWrap}>
+              <Search color={C.primaryDark} size={32} strokeWidth={1.8} />
+            </View>
+            <Text style={styles.emptyTitle}>No Searches Yet</Text>
+            <Text style={styles.emptyDesc}>
+              You have not asked any questions yet. Go to the Explore tab and search any question about Indian Standards, certification, or hallmarking.
+            </Text>
+            <Pressable
+              onPress={() => router.replace('/')}
+              style={styles.startSearchButton}
+              accessibilityRole="button"
+              accessibilityLabel="Start asking questions"
+            >
+              <MessageSquare color="#FFFFFF" size={16} />
+              <Text style={styles.startSearchText}>Ask a Question</Text>
+            </Pressable>
+          </View>
+        ) : (
+          /* Live Dynamic Query List */
+          <View style={styles.listContainer}>
+            {historyItems.map((item) => (
+              <View key={item.id} style={styles.card}>
+                {/* Meta Header */}
+                <View style={styles.cardMetaRow}>
+                  <View style={styles.timeWrap}>
+                    <Clock3 color={C.muted} size={11} />
+                    <Text style={styles.timeText}>{formatTimestamp(item.timestamp)}</Text>
+                  </View>
+                  <View style={styles.langPill}>
+                    <Text style={styles.langText}>{item.language === 'Hindi' ? 'हिन्दी' : 'English'}</Text>
+                  </View>
+                </View>
+
+                {/* User Query */}
+                <View style={styles.queryWrap}>
+                  <Text style={styles.queryPrefix}>Q</Text>
+                  <Text style={styles.queryText}>"{item.query}"</Text>
+                </View>
+
+                {/* Answer Content */}
+                <View style={styles.answerWrap}>
+                  <Text style={styles.answerPrefix}>ANSWER</Text>
+                  <Text style={styles.answerText}>{item.answerText}</Text>
+                </View>
+
+                {/* Citation & Source Info */}
+                {item.citation && (
+                  <View style={styles.citationRow}>
+                    <ShieldCheck color={C.green} size={13} />
+                    <Text style={styles.citationText} numberOfLines={1}>
+                      {item.citation}
+                    </Text>
+                    {item.sourceUrl && (
+                      <Pressable
+                        onPress={() => Linking.openURL(item.sourceUrl!)}
+                        style={styles.sourceLink}
+                        accessibilityRole="link"
+                      >
+                        <ExternalLink color={C.primary} size={12} />
+                      </Pressable>
+                    )}
+                  </View>
+                )}
+
+                {/* Card Footer: Ask again / Continue in chat */}
+                <View style={styles.cardFooter}>
+                  <Pressable
+                    onPress={() => router.replace('/')}
+                    style={styles.continueAction}
+                    accessibilityRole="button"
+                    accessibilityLabel="Open in conversation"
+                  >
+                    <RotateCcw color={C.primary} size={12} />
+                    <Text style={styles.continueActionText}>Open in Conversation</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Evidence Trust Note */}
+        <View style={styles.gateNotice}>
+          <ShieldCheck color={C.green} size={16} strokeWidth={2.2} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.gateTitle}>Evidence Grounding Verification</Text>
             <Text style={styles.gateText}>
-              SahayakBIS operates on strict evidence grounding: no verified BIS citation → safe abstention.
-              No ungrounded LLM hallucination is permitted.
+              All recorded answers are verified against official BIS documentation. No ungrounded LLM hallucination is retained.
             </Text>
           </View>
         </View>
@@ -191,112 +176,232 @@ export default function HistoryScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  content: { padding: 20, paddingBottom: 32 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 },
+  content: { padding: 18, paddingBottom: 36 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 8 },
   icon: {
-    width: 46,
-    height: 46,
-    borderRadius: 15,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     backgroundColor: C.navy,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 2,
   },
-  eyebrow: { color: C.amberDark, fontSize: 10, letterSpacing: 1.4, fontWeight: '800' },
-  title: { color: C.navy, fontSize: 24, fontWeight: '800', marginTop: 3 },
+  eyebrow: { color: C.amberDark, fontSize: 9.5, letterSpacing: 1.2, fontWeight: '800' },
+  title: { color: C.navy, fontSize: 23, fontWeight: '800', marginTop: 2 },
   subtitle: {
     color: C.muted,
-    fontSize: 13.5,
-    lineHeight: 20,
-    marginTop: 12,
-    marginBottom: 16,
+    fontSize: 12,
+    lineHeight: 16.5,
+    marginTop: 2,
+    fontWeight: '600',
   },
-  sectionHeaderRow: {
+  clearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    marginTop: 6,
+  },
+  clearButtonText: {
+    color: C.red,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 14,
+    padding: 30,
+    marginTop: 24,
+    marginBottom: 20,
+    gap: 10,
+  },
+  emptyIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#EEF6FC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  emptyTitle: {
+    color: C.navy,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  emptyDesc: {
+    color: C.muted,
+    fontSize: 12.5,
+    lineHeight: 18,
+    textAlign: 'center',
+    maxWidth: 320,
+  },
+  startSearchButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 10,
+    backgroundColor: C.primary,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     marginTop: 8,
   },
-  sectionDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
+  startSearchText: {
+    color: '#FFFFFF',
+    fontSize: 12.5,
+    fontWeight: '700',
   },
-  sectionHeaderText: {
-    color: C.navy,
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 0.8,
+  listContainer: {
+    marginTop: 16,
+    gap: 12,
   },
-  queryCard: {
+  card: {
     backgroundColor: C.bg,
     borderColor: C.border,
     borderWidth: 1,
     borderRadius: 14,
     padding: 14,
-    marginBottom: 10,
     shadowColor: C.navy,
     shadowOpacity: 0.04,
     shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
-  queryCardConsumer: {
-    borderColor: '#E8D6A7',
-    backgroundColor: '#FCFAF6',
-  },
-  queryCardTop: {
+  cardMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  queryCategoryPill: {
-    backgroundColor: C.primaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  timeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
-  queryCategoryPillConsumer: {
-    backgroundColor: '#FFF6DF',
+  timeText: {
+    color: '#64748B',
+    fontSize: 10.5,
+    fontWeight: '600',
   },
-  queryCategoryText: {
+  langPill: {
+    backgroundColor: '#EEF6FC',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  langText: {
     color: C.primaryDark,
     fontSize: 9.5,
-    fontWeight: '800',
-    letterSpacing: 0.4,
-  },
-  queryTitle: {
-    color: C.navy,
-    fontSize: 13.5,
     fontWeight: '700',
-    lineHeight: 19,
   },
-  queryDesc: {
-    color: C.muted,
-    fontSize: 11.5,
-    lineHeight: 16,
-    marginTop: 5,
+  queryWrap: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    padding: 9,
+    marginBottom: 10,
+  },
+  queryPrefix: {
+    color: C.primaryDark,
+    fontSize: 11,
+    fontWeight: '800',
+    backgroundColor: '#E0EEF9',
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 4,
+  },
+  queryText: {
+    flex: 1,
+    color: C.navy,
+    fontSize: 12.5,
+    fontWeight: '700',
+    lineHeight: 17,
+  },
+  answerWrap: {
+    paddingHorizontal: 2,
+    marginBottom: 8,
+  },
+  answerPrefix: {
+    color: C.teal,
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    marginBottom: 3,
+  },
+  answerText: {
+    color: '#334155',
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  citationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#F0FDF4',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  citationText: {
+    flex: 1,
+    color: '#166534',
+    fontSize: 10.5,
+    fontWeight: '700',
+  },
+  sourceLink: {
+    padding: 2,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 8,
+    marginTop: 4,
+  },
+  continueAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  continueActionText: {
+    color: C.primary,
+    fontSize: 11,
+    fontWeight: '700',
   },
   gateNotice: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
-    backgroundColor: '#EEF6FC',
-    borderColor: '#BED8F0',
+    backgroundColor: '#F0FDF4',
+    borderColor: '#BBF7D0',
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 10,
+    padding: 12,
     marginTop: 18,
   },
   gateTitle: {
-    color: C.primaryDark,
-    fontSize: 12,
+    color: '#166534',
+    fontSize: 11.5,
     fontWeight: '800',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   gateText: {
-    color: '#345270',
+    color: '#166534',
     fontSize: 11,
     lineHeight: 16,
   },

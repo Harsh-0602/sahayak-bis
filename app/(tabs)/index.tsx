@@ -28,8 +28,11 @@ import {
   Zap,
   BadgeCheck,
   BookOpen,
+  Search,
+  RotateCcw,
 } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
+import { addHistoryItem } from '@/lib/historyStore';
 
 // ─── Design Tokens (design.md palette) ───────────────────────────────────────
 const C = {
@@ -132,122 +135,225 @@ const LOADING_STAGES = {
   ],
 };
 
-// ─── Intent Buttons & Pilot Demonstrations (Industry & Consumer) ────────────
-type IntentDef = {
+// ─── Core Product Capabilities (Generic, Product-Level Functions) ───────────
+type ProductCapability = {
   id: string;
-  category: 'Industry' | 'Consumer';
   label: string;
   labelHi: string;
   icon: any;
   query: string;
   queryHi: string;
+  description: string;
+  descriptionHi: string;
 };
 
-const INTENTS: IntentDef[] = [
+export const PRODUCT_CAPABILITIES: ProductCapability[] = [
   {
-    id: 'find_led',
-    category: 'Industry',
-    label: 'LED Standard',
-    labelHi: 'LED मानक',
+    id: 'find_standard',
+    label: 'Find My Standard',
+    labelHi: 'मानक खोजें',
     icon: FileSearch,
+    query: 'How do I find the applicable BIS standard for my product?',
+    queryHi: 'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
+    description: 'Search standards by product or technical sector',
+    descriptionHi: 'उत्पाद या तकनीकी क्षेत्र के अनुसार मानक खोजें',
+  },
+  {
+    id: 'check_requirement',
+    label: 'Check BIS Requirement',
+    labelHi: 'आवश्यकता जाँचें',
+    icon: CheckCircle2,
+    query: 'How can I check whether a BIS requirement applies?',
+    queryHi: 'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
+    description: 'Verify mandatory QCO / CRO applicability',
+    descriptionHi: 'अनिवार्य QCO / CRO आदेश की पुष्टि करें',
+  },
+  {
+    id: 'compliance_roadmap',
+    label: 'Build Compliance Roadmap',
+    labelHi: 'अनुपालन रोडमैप',
+    icon: Sparkles,
+    query: 'Show me how to build a BIS compliance roadmap.',
+    queryHi: 'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+    description: 'Evidence-grounded compliance roadmap',
+    descriptionHi: 'साक्ष्य-आधारित अनुपालन रोडमैप',
+  },
+  {
+    id: 'verify_understand',
+    label: 'Verify / Understand',
+    labelHi: 'सत्यापन व जानकारी',
+    icon: ShieldCheck,
+    query: 'What BIS services can help me verify a product?',
+    queryHi: 'उत्पाद सत्यापन में कौन सी BIS सेवाएं मदद कर सकती हैं?',
+    description: 'Understand verification, certification and BIS service information',
+    descriptionHi: 'सत्यापन, प्रमाणन और BIS सेवा जानकारी समझें',
+  },
+  {
+    id: 'explore_services',
+    label: 'Explore BIS Services',
+    labelHi: 'BIS सेवाएं देखें',
+    icon: Globe2,
+    query: 'What are the key official BIS services and portals?',
+    queryHi: 'प्रमुख आधिकारिक BIS सेवाएं और पोर्टल कौन से हैं?',
+    description: 'Manakonline, CRS & BIS CARE ecosystem',
+    descriptionHi: 'मानकऑनलाइन, CRS व BIS केयर ऐप',
+  },
+];
+
+// Representative Pilot Demonstrations (Slice of connected data)
+export const DEMO_WORKFLOW_CHIPS = [
+  {
+    id: 'demo_led_std',
+    label: 'LED Lamp Standard (IS 16102)',
+    labelHi: 'LED मानक (IS 16102)',
     query: 'Which BIS standard applies to LED bulbs?',
     queryHi: 'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
   },
   {
-    id: 'req_led',
-    category: 'Industry',
-    label: 'CRS Requirement',
-    labelHi: 'CRS आवश्यकता',
-    icon: ShieldCheck,
+    id: 'demo_led_req',
+    label: 'LED Mandatory CRS Order',
+    labelHi: 'LED अनिवार्य CRS आदेश',
     query: 'What is the BIS certification requirement for LED lamps?',
     queryHi: 'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
   },
   {
-    id: 'roadmap_led',
-    category: 'Industry',
-    label: 'LED Roadmap',
-    labelHi: 'LED रोडमैप',
-    icon: Sparkles,
+    id: 'demo_led_roadmap',
+    label: 'LED Compliance Roadmap',
+    labelHi: 'LED अनुपालन रोडमैप',
     query: 'Show me the BIS compliance roadmap for LED lamps.',
     queryHi: 'LED बल्ब BIS प्रमाणन रोडमैप',
   },
   {
-    id: 'verify_gold',
-    category: 'Consumer',
-    label: 'Gold & HUID',
-    labelHi: 'सोना व HUID',
-    icon: BadgeCheck,
+    id: 'demo_gold_huid',
+    label: 'Gold Hallmarking & HUID',
+    labelHi: 'सोना हॉलमार्किंग व HUID',
     query: 'How do I verify a 6-digit HUID on gold jewellery?',
     queryHi: 'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
   },
   {
-    id: 'silver_std',
-    category: 'Consumer',
-    label: 'Silver (IS 2112)',
-    labelHi: 'चाँदी मानक',
-    icon: BookOpen,
-    query: 'What are the silver hallmarking standards (IS 2112)?',
-    queryHi: 'चाँदी की हॉलमार्किंग मानक (IS 2112)',
-  },
-  {
-    id: 'fineness_explain',
-    category: 'Consumer',
-    label: 'What is 22K916?',
-    labelHi: '22K916 क्या है?',
-    icon: Zap,
+    id: 'demo_gold_purity',
+    label: '22K916 Meaning & Purity',
+    labelHi: '22K916 अर्थ व शुद्धता',
     query: 'What does 22K916 mean?',
     queryHi: '22K916 का क्या मतलब है?',
   },
+  {
+    id: 'demo_silver_std',
+    label: 'Silver Jewellery (IS 2112)',
+    labelHi: 'चाँदी मानक (IS 2112)',
+    query: 'What are the silver hallmarking standards (IS 2112)?',
+    queryHi: 'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+  },
 ];
 
-// ─── Suggested Prompts (Golden SIH Demo Queries) ─────────────────────────────
-const prompts = {
-  English: [
-    'Which BIS standard applies to LED bulbs?',
-    'Is BIS certification required for LED lamps?',
-    'Show me the BIS compliance roadmap for LED lamps.',
-    'How do I verify a 6-digit HUID on gold jewellery?',
-    'What does 22K916 mean?',
-    'What are the silver hallmarking standards (IS 2112)?',
-    'Can you guarantee that my product is BIS compliant?',
-    'I make electric blankets, what BIS standard applies?',
-    'What is the stock price of Apple?',
-  ],
-  Hindi: [
-    'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
-    'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
-    'LED बल्ब BIS प्रमाणन रोडमैप',
-    'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
-    '22K916 का क्या मतलब है?',
-    'चाँदी की हॉलमार्किंग मानक (IS 2112)',
-    'क्या आप गारंटी दे सकते हैं कि मेरा उत्पाद पास हो जाएगा?',
-    'आज का मौसम कैसा रहेगा?',
-  ],
+// ─── Suggested Questions (Concise Labels + Full Grounded Queries) ───────────
+type SuggestedPrompt = {
+  id: string;
+  label: string;
+  labelHi: string;
+  query: string;
+  queryHi: string;
 };
+
+export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
+  // ── General BIS Product Capabilities (First) ──
+  {
+    id: 'p_find_std',
+    label: 'Find applicable BIS standard',
+    labelHi: 'लागू BIS मानक खोजें',
+    query: 'How do I find the applicable BIS standard for my product?',
+    queryHi: 'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
+  },
+  {
+    id: 'p_check_req',
+    label: 'Check whether BIS applies',
+    labelHi: 'BIS आवश्यकता जाँचें',
+    query: 'How can I check whether a BIS requirement applies?',
+    queryHi: 'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
+  },
+  {
+    id: 'p_testing_info',
+    label: 'Find BIS testing information',
+    labelHi: 'BIS परीक्षण जानकारी खोजें',
+    query: 'How can I find the relevant testing information?',
+    queryHi: 'परीक्षण संबंधी जानकारी कैसे प्राप्त करें?',
+  },
+  {
+    id: 'p_roadmap',
+    label: 'Build BIS compliance roadmap',
+    labelHi: 'BIS अनुपालन रोडमैप बनाएं',
+    query: 'Show me how to build a BIS compliance roadmap.',
+    queryHi: 'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+  },
+  {
+    id: 'p_services',
+    label: 'Explore BIS services',
+    labelHi: 'BIS सेवाएं देखें',
+    query: 'What are the key official BIS services and portals?',
+    queryHi: 'प्रमुख आधिकारिक BIS सेवाएं और पोर्टल कौन से हैं?',
+  },
+
+  // ── Representative Evidence Demonstrations ──
+  {
+    id: 'p_huid_work',
+    label: 'How does HUID verification work?',
+    labelHi: 'HUID सत्यापन कैसे काम करता है?',
+    query: 'How do I verify a 6-digit HUID on gold jewellery?',
+    queryHi: 'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+  },
+  {
+    id: 'p_led_std',
+    label: 'What is the LED lamp standard?',
+    labelHi: 'LED लैंप मानक क्या है?',
+    query: 'Which BIS standard applies to LED bulbs?',
+    queryHi: 'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
+  },
+  {
+    id: 'p_22k916',
+    label: 'Decode 22K916 fineness',
+    labelHi: '22K916 शुद्धता समझें',
+    query: 'What does 22K916 mean?',
+    queryHi: '22K916 का क्या मतलब है?',
+  },
+  {
+    id: 'p_silver_std',
+    label: 'Silver hallmarking (IS 2112)',
+    labelHi: 'चाँदी हॉलमार्किंग (IS 2112)',
+    query: 'What are the silver hallmarking standards (IS 2112)?',
+    queryHi: 'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+  },
+];
 
 // ─── Official BIS Sources ─────────────────────────────────────────────────────
 const HALLMARKING_FAQ_URL = 'https://www.bis.gov.in/hallmarking-overview/hallmarking-faqs/hallmarking-faq/?lang=en';
 const BIS_PORTAL_URL = 'https://www.bis.gov.in/';
 const BIS_CARE_URL = 'https://www.bis.gov.in/product-certification/online-information/';
+const MANAKONLINE_URL = 'https://www.manakonline.in/';
 
 const localSources: Source[] = [
   {
-    title: 'Indian Standards on LED',
+    title: 'BIS Standards Directory & Manakonline Portal',
+    url: MANAKONLINE_URL,
+    citation: 'BIS Standards Directory · e-BIS',
+    summary: 'Official repository of all gazetted Indian Standards, technical committees, and e-application portals.',
+  },
+  {
+    title: 'Indian Standards on LED (IS 16102)',
     url: 'https://bis.gov.in/other/LEDSeries.pdf',
     citation: 'BIS LED Series · IS 16102',
-    summary: 'Official list covering LED lamps, modules, control gear, measurements and luminaires.',
+    summary: 'Official standards covering LED lamps: Safety (IS 16102 Part 1:2026) and Performance (IS 16102 Part 2:2012).',
   },
   {
-    title: 'Gold & Silver Hallmarking FAQs & Standards',
+    title: 'Gold & Silver Hallmarking Regulations',
     url: HALLMARKING_FAQ_URL,
-    citation: 'BIS Gold & Silver · HUID',
-    summary: 'Confirms the three-part hallmark: BIS logo, purity/fineness grades (IS 1417 & IS 2112) and six-digit HUID.',
+    citation: 'BIS Hallmarking · IS 1417 & IS 2112',
+    summary: 'Confirms the 3-part hallmark regime: BIS logo, purity/fineness grades, and 6-digit laser-engraved HUID.',
   },
   {
-    title: 'Consumer Protection & HUID Verification',
+    title: 'Consumer Protection & BIS CARE HUID Lookup',
     url: 'https://www.bis.gov.in/hallmarking-overview/consumer-protection?lang=en',
-    citation: 'BIS Consumer Protection',
-    summary: 'Consumer guidance on using the BIS CARE mobile app to verify hallmarking before buying.',
+    citation: 'BIS Consumer Protection · BIS CARE',
+    summary: 'Citizen guidance on verifying 6-digit HUID codes and ISI marks via the official BIS CARE mobile application.',
   },
 ];
 
@@ -352,6 +458,138 @@ export const EVIDENCE_DATABASE: Record<string, EvidenceDetail> = {
     applicabilityType: 'Voluntary',
     applicabilityTypeHi: 'स्वैच्छिक (Voluntary Scheme)',
   },
+  'BIS_DIRECTORY': {
+    isNumber: 'BIS Standards Directory (Manakonline)',
+    title: 'National Standards Formulation & Search Directory',
+    titleHi: 'राष्ट्रीय मानक निर्माण व खोज निर्देशिका',
+    scheme: 'Indian Standards Formulation & Publication',
+    schemeHi: 'भारतीय मानक निर्माण व प्रकाशन',
+    schemeType: 'Voluntary',
+    authority: 'Bureau of Indian Standards · Standardization Directorate',
+    year: 'Active National Catalogue · 20,000+ Standards',
+    scopeSummary: 'Official national repository of gazetted Indian Standards across 14 technical sectors. Standards define specifications, testing methods, tolerances, and sampling criteria.',
+    scopeSummaryHi: '14 तकनीकी क्षेत्रों में भारतीय मानकों का आधिकारिक राष्ट्रीय भंडार। मानक विनिर्देशों, परीक्षण विधियों, सहिष्णुता और नमूनाकरण मानदंडों को परिभाषित करते हैं।',
+    keyRequirements: [
+      'Search applicable standards by product keyword, ICS classification, or Sectional Committee',
+      'Verify latest published edition, revisions, and gazetted amendments',
+      'Standards remain voluntary technical specifications unless notified under statutory QCO/CRO',
+      'Purchase or read full-text standards on official portal manakonline.in',
+    ],
+    keyRequirementsHi: [
+      'उत्पाद कीवर्ड, ICS वर्गीकरण या समिति द्वारा लागू मानक खोजें',
+      'नवीनतम प्रकाशित संस्करण, संशोधन और राजपत्रित अधिसूचनाओं की पुष्टि करें',
+      'मानक स्वैच्छिक रहते हैं जब तक कि वैधानिक QCO/CRO द्वारा अनिवार्य न किए जाएं',
+      'आधिकारिक पोर्टल manakonline.in पर पूर्ण मानक पढ़ें या खरीदें',
+    ],
+    sourceUrl: 'https://www.manakonline.in/',
+    sourceTitle: 'Manakonline — BIS Official E-Governance Portal',
+    verifiedDate: 'Active National Directory · Bureau of Indian Standards',
+    regulatoryBasis: 'Formulated pursuant to Section 10 of the Bureau of Indian Standards Act, 2016. An Indian Standard serves as a national benchmark; legal compulsion requires a separate statutory order.',
+    regulatoryBasisHi: 'BIS अधिनियम 2016 की धारा 10 के तहत निर्मित। भारतीय मानक एक राष्ट्रीय बेंचमार्क है; कानूनी अनिवार्यता के लिए अलग वैधानिक आदेश आवश्यक है।',
+    legalOrder: 'Section 10 of BIS Act, 2016 · National Standardization Framework',
+    legalOrderHi: 'BIS अधिनियम 2016 की धारा 10 · राष्ट्रीय मानकीकरण ढांचा',
+    applicabilityType: 'Voluntary',
+    applicabilityTypeHi: 'स्वैच्छिक (Technical Specification)',
+  },
+  'BIS_QCO_FRAMEWORK': {
+    isNumber: 'Quality Control Orders (QCO) Register',
+    title: 'Mandatory Quality Control & Compulsory Registration Orders',
+    titleHi: 'अनिवार्य गुणवत्ता नियंत्रण व अनिवार्य पंजीकरण आदेश',
+    scheme: 'Statutory Ministerial Regulation',
+    schemeHi: 'वैधानिक मंत्रालयी विनियमन',
+    schemeType: 'CRS',
+    authority: 'Line Ministries (DPIIT, MeitY, MoHUA, etc.) in consultation with BIS',
+    year: 'Active Statutory Regime · Gazette Notifications',
+    scopeSummary: 'Statutory orders issued under the BIS Act, 2016 prohibiting manufacture, import, distribution, or sale of notified goods without valid BIS certification or registration.',
+    scopeSummaryHi: 'BIS अधिनियम 2016 के तहत जारी वैधानिक आदेश, जो वैध BIS प्रमाणन या पंजीकरण के बिना अधिसूचित वस्तुओं के निर्माण, आयात या बिक्री को प्रतिबंधित करते हैं।',
+    keyRequirements: [
+      'Statutory compliance mandatory for all domestic manufacturers and importers',
+      'Mandatory use of Standard Mark (ISI Mark Scheme I or CRS Registration Scheme II)',
+      'Sub-standard or uncertified goods subject to confiscation and statutory penalties',
+      'Enforced by BIS quality enforcement officers and district authorities',
+    ],
+    keyRequirementsHi: [
+      'सभी घरेलू निर्माताओं और आयातकों के लिए वैधानिक अनुपालन अनिवार्य',
+      'मानक चिह्न (ISI मार्क योजना-I या CRS पंजीकरण योजना-II) का अनिवार्य उपयोग',
+      'गैर-प्रमाणित सामग्री को जब्त करने और दंडात्मक कार्रवाई का कानूनी प्रावधान',
+      'BIS गुणवत्ता प्रवर्तन अधिकारियों द्वारा निरीक्षण व निगरानी',
+    ],
+    sourceUrl: 'https://www.bis.gov.in/',
+    sourceTitle: 'BIS Official QCO Directory & Notifications',
+    verifiedDate: 'Active Statutory Gazette · Government of India',
+    regulatoryBasis: 'Issued under Section 16 of the BIS Act, 2016 by Central Government ministries for public safety, consumer health, and prevention of deceptive practices.',
+    regulatoryBasisHi: 'जन सुरक्षा और उपभोक्ता संरक्षण के लिए केंद्र सरकार के मंत्रालयों द्वारा BIS अधिनियम 2016 की धारा 16 के तहत जारी।',
+    legalOrder: 'Section 16 of BIS Act, 2016 · Statutory Orders by Line Ministries',
+    legalOrderHi: 'BIS अधिनियम 2016 की धारा 16 · संबंधित मंत्रालयों द्वारा वैधानिक आदेश',
+    applicabilityType: 'Mandatory',
+    applicabilityTypeHi: 'अनिवार्य (Statutory Law)',
+  },
+  'BIS_LRS_TESTING': {
+    isNumber: 'Laboratory Recognition Scheme (LRS)',
+    title: 'BIS Central Laboratories & Recognized Testing Network',
+    titleHi: 'BIS केंद्रीय प्रयोगशालाएं व मान्यता प्राप्त परीक्षण नेटवर्क',
+    scheme: 'Conformity Assessment Testing Scheme',
+    schemeHi: 'अनुरूपता मूल्यांकन परीक्षण योजना',
+    schemeType: 'Voluntary',
+    authority: 'Bureau of Indian Standards · Central Laboratory Directorate',
+    year: 'Active Pan-India Laboratory Network',
+    scopeSummary: 'Network comprising BIS own laboratories and NABL-accredited third-party commercial/government laboratories officially recognized for testing products against Indian Standards.',
+    scopeSummaryHi: 'BIS की अपनी प्रयोगशालाओं और NABL-मान्यता प्राप्त प्रयोगशालाओं का नेटवर्क जो भारतीय मानकों के अनुसार उत्पाद परीक्षण के लिए अधिकृत हैं।',
+    keyRequirements: [
+      'Testing must be performed exclusively at authorized BIS-recognized testing facilities',
+      'Test reports evaluated against physical, electrical, chemical, and durability clauses of the IS',
+      'Testing parameters and limits defined directly within the relevant Indian Standard',
+      'Lab Information Management System (LIMS) enables online sample tracking and report delivery',
+    ],
+    keyRequirementsHi: [
+      'परीक्षण विशेष रूप से अधिकृत BIS-मान्यता प्राप्त प्रयोगशालाओं में किया जाना अनिवार्य',
+      'परीक्षण रिपोर्ट का मूल्यांकन मानक के भौतिक, विद्युत, रासायनिक और सहनशीलता खंडों पर',
+      'प्रासंगिक भारतीय मानक के भीतर सीधे निर्धारित परीक्षण मापदंड और सीमाएं',
+      'प्रयोगशाला प्रबंधन प्रणाली (LIMS) द्वारा नमूनों की ऑनलाइन ट्रैकिंग',
+    ],
+    sourceUrl: 'https://www.bis.gov.in/',
+    sourceTitle: 'BIS Laboratory Information Management System (LIMS)',
+    verifiedDate: 'Active Testing Network · Bureau of Indian Standards',
+    regulatoryBasis: 'Conformity testing executed in accordance with Regulation 4 of the BIS (Conformity Assessment) Regulations, 2018.',
+    regulatoryBasisHi: 'BIS (अनुरूपता मूल्यांकन) विनियम 2018 के विनियमन 4 के अनुसार परीक्षण।',
+    legalOrder: 'Regulation 4 of BIS (Conformity Assessment) Regulations, 2018',
+    legalOrderHi: 'BIS (अनुरूपता मूल्यांकन) विनियम 2018 का विनियमन 4',
+    applicabilityType: 'Mandatory',
+    applicabilityTypeHi: 'अनिवार्य परीक्षण (Mandatory for Certification)',
+  },
+  'BIS_SERVICES_CITIZEN': {
+    isNumber: 'BIS Digital Services Ecosystem',
+    title: 'Official Digital Services (Manakonline, CRS Portal, BIS CARE App)',
+    titleHi: 'आधिकारिक डिजिटल सेवाएं (मानकऑनलाइन, CRS पोर्टल, BIS केयर ऐप)',
+    scheme: 'Digital Citizen & Industry Services',
+    schemeHi: 'डिजिटल नागरिक व उद्योग सेवाएं',
+    schemeType: 'Voluntary',
+    authority: 'Bureau of Indian Standards · IT & Citizen Services Division',
+    year: 'Government of India Digital Platforms',
+    scopeSummary: 'Official digital portals facilitating standard discovery, enterprise certification applications, laboratory testing tracking, consumer HUID verification, and public complaint redressal.',
+    scopeSummaryHi: 'मानक खोज, लाइसेंस आवेदन, प्रयोगशाला परीक्षण ट्रैकिंग, उपभोक्ता HUID सत्यापन और शिकायत निवारण की आधिकारिक डिजिटल प्रणाली।',
+    keyRequirements: [
+      'Manakonline (e-BIS): Enterprise portal for standard purchase and license filing',
+      'CRS Portal: Dedicated platform for IT and electronic goods compulsory registration',
+      'BIS CARE App: Mobile application for citizens to verify ISI mark, Hallmarking HUID, and lodge grievances',
+      'Know Your Standards: Public access portal for reading published Indian Standards',
+    ],
+    keyRequirementsHi: [
+      'मानकऑनलाइन: मानक खरीद और लाइसेंस आवेदन के लिए उद्यम पोर्टल',
+      'CRS पोर्टल: इलेक्ट्रॉनिक्स और आईटी उत्पादों के पंजीकरण के लिए समर्पित मंच',
+      'BIS केयर ऐप: ISI मार्क, HUID सत्यापन और शिकायत दर्ज करने के लिए मोबाइल ऐप',
+      'अपने मानक जानें: प्रकाशित भारतीय मानकों को पढ़ने के लिए सार्वजनिक पोर्टल',
+    ],
+    sourceUrl: 'https://www.bis.gov.in/',
+    sourceTitle: 'Bureau of Indian Standards Official Portal',
+    verifiedDate: 'Active Digital Ecosystem · Government of India',
+    regulatoryBasis: 'Citizen empowerment and transparent governance frameworks established under the Bureau of Indian Standards Act, 2016.',
+    regulatoryBasisHi: 'BIS अधिनियम 2016 के तहत नागरिक सशक्तिकरण और पारदर्शी ई-गवर्नेंस ढांचा।',
+    legalOrder: 'Bureau of Indian Standards Act, 2016 (Act No. 11 of 2016)',
+    legalOrderHi: 'भारतीय मानक ब्यूरो अधिनियम, 2016',
+    applicabilityType: 'Voluntary',
+    applicabilityTypeHi: 'नागरिक सेवा (Public Service)',
+  },
 };
 
 // ─── Roadmap Steps (LED / IS 16102) ──────────────────────────────────────────
@@ -415,13 +653,14 @@ function getSampleMessages(language: Language): ChatMessage[] {
       {
         id: 1,
         role: 'assistant',
-        text: 'नमस्ते! मैं SahayakBIS हूँ।',
-        answerText: 'नमस्ते! मैं SahayakBIS हूँ — BIS मानकों के लिए एक साक्ष्य-आधारित मार्गदर्शन सहायक।',
-        nextStep: 'LED बल्ब (IS 16102) या सोने/चाँदी की हॉलमार्किंग (IS 1417, IS 2112) के बारे में पूछें।',
+        text: 'नमस्ते! मैं SahayakBIS हूँ — भारतीय मानकों और सेवाओं के लिए संवादात्मक बुद्धिमत्ता।',
+        answerText: 'नमस्ते! मैं SahayakBIS हूँ — भारतीय मानकों, अनिवार्य प्रमाणन, परीक्षण और उपभोक्ता सेवाओं के लिए साक्ष्य-आधारित मार्गदर्शन सहायक।',
+        nextStep: 'अपने उत्पाद के लिए लागू मानक, अनिवार्य QCO आवश्यकता, अनुपालन रोडमैप या हॉलमार्किंग के बारे में पूछें।',
         followUpsHi: [
-          'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
-          'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
-          'चाँदी की हॉलमार्किंग मानक (IS 2112)',
+          'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
+          'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
+          'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+          'उत्पाद सत्यापन में कौन सी BIS सेवाएं मदद कर सकती हैं?',
         ],
       },
     ]
@@ -429,41 +668,46 @@ function getSampleMessages(language: Language): ChatMessage[] {
       {
         id: 1,
         role: 'assistant',
-        text: 'Hello! I am SahayakBIS.',
-        answerText: 'Hello! I am SahayakBIS — an evidence-grounded guidance assistant for Indian Standards and BIS services.',
-        nextStep: 'Ask about LED bulbs (IS 16102) or Gold/Silver hallmarking (IS 1417, IS 2112). Use the intent buttons below or type your question.',
+        text: 'Hello! I am SahayakBIS — conversational intelligence for Indian Standards & BIS services.',
+        answerText: 'Hello! I am SahayakBIS — an evidence-grounded intelligence layer for navigating Indian Standards, mandatory certification requirements, lab testing, and BIS services.',
+        nextStep: 'Ask any question about standard discovery, statutory QCO requirements, compliance roadmaps, or product verification.',
         followUps: [
-          'Which BIS standard applies to LED bulbs?',
-          'How do I verify gold hallmarking & HUID?',
-          'What are the silver hallmarking standards (IS 2112)?',
+          'How do I find the applicable BIS standard for my product?',
+          'How can I check whether a BIS requirement applies?',
+          'Show me how to build a BIS compliance roadmap.',
+          'What BIS services can help me verify a product?',
         ],
       },
     ];
 }
 
 // ─── Language Detection (preserved exactly) ──────────────────────────────────
+// ─── Language Detection (Accurate English / Devanagari Hindi / Hinglish) ──────
 function classifyQueryLanguage(text: string): 'Hindi' | 'English' | 'Hinglish' {
   if (/[\u0900-\u097F]/.test(text)) return 'Hindi';
 
   const lower = text.toLowerCase();
   const words = lower.split(/[^a-zA-Z0-9]+/).filter(Boolean);
 
+  // Unambiguous romanized Hindi words (zero collision with standard English words)
   const strongHinglishWords = new Set([
-    'muje', 'mujhe', 'hum', 'hume', 'humko', 'ham', 'mera', 'meri', 'mere', 'apna', 'apni', 'apne',
+    'muje', 'mujhe', 'humko', 'hume', 'mera', 'meri', 'mere', 'apna', 'apni', 'apne',
     'karna', 'kare', 'karen', 'karo', 'karta', 'karti', 'karte', 'karne', 'karwaya', 'karwaye',
-    'konse', 'kaunsa', 'kaunse', 'kaunsi', 'konsi', 'kon', 'kaun', 'kisko', 'kiske',
-    'kya', 'kyu', 'kyun', 'kaise', 'kese', 'kis', 'kisi',
-    'hai', 'hain', 'hoga', 'hogi', 'hoge', 'hoti', 'hota', 'hote', 'hu', 'hoon',
-    'toh', 'bhi', 'aur', 'batao', 'bataye', 'batayein', 'bataiye', 'boliye', 'bolo',
+    'konse', 'kaunsa', 'kaunse', 'kaunsi', 'konsi', 'kaun', 'kisko', 'kiske',
+    'kya', 'kyu', 'kyun', 'kaise', 'kese',
+    'hoga', 'hogi', 'hoge', 'hoti', 'hota', 'hote', 'hoon', 'hai', 'hain',
+    'batao', 'bataye', 'batayein', 'bataiye', 'boliye', 'bolo',
     'chahiye', 'chahie', 'chahta', 'chahti',
-    'nhi', 'nahi', 'mat', 'tha', 'thi', 'the',
-    'kitna', 'kitne', 'kitni', 'kaha', 'kahan',
+    'nhi', 'nahi',
+    'kitna', 'kitne', 'kitni', 'kahan', 'kaha',
     'zaroorat', 'zarurat', 'zaruri', 'zaroori',
-    'kharidna', 'khareedna', 'bechna', 'shuru', 'chandi', 'chaandi', 'sona', 'sone',
+    'kharidna', 'khareedna', 'bechna', 'shuru',
     'wali', 'wala', 'wale', 'baare', 'bare', 'liye', 'kholna',
+    'milega', 'milegi', 'bante', 'banata', 'lagta', 'lagti', 'hona',
   ]);
 
-  const contextualHinglishWords = new Set(['ka', 'ki', 'ke', 'ko', 'se', 'par', 'pe', 'mein', 'h']);
+  // Contextual particles that require at least two occurrences or companion indicators
+  const contextualHinglishWords = new Set(['ka', 'ki', 'ke', 'ko', 'mein']);
 
   let strongCount = 0;
   let contextualCount = 0;
@@ -477,13 +721,18 @@ function classifyQueryLanguage(text: string): 'Hindi' | 'English' | 'Hinglish' {
 }
 
 // ─── Query Taxonomy & Classification ─────────────────────────────────────────
-type ProductScope = 'LED' | 'GOLD' | 'SILVER' | 'UNKNOWN_PRODUCT' | 'NONE';
+type ProductScope = 'LED' | 'GOLD' | 'SILVER' | 'GENERIC_BIS' | 'UNKNOWN_PRODUCT' | 'NONE';
 type UserIntent =
   | 'DISCOVER_STANDARD'
   | 'REQUIREMENT_CHECK'
   | 'ROADMAP_REQUEST'
   | 'VERIFY_HALLMARK_HUID'
   | 'EXPLAIN_FINENESS'
+  | 'GENERIC_FIND_STANDARD'
+  | 'GENERIC_REQUIREMENT_CHECK'
+  | 'GENERIC_ROADMAP'
+  | 'GENERIC_TESTING_INFO'
+  | 'GENERIC_SERVICES_OVERVIEW'
   | 'ADVERSARIAL_GUARANTEE'
   | 'UNKNOWN_PRODUCT_QUERY'
   | 'OUT_OF_SCOPE';
@@ -606,6 +855,57 @@ function classifyUserQuery(question: string): QueryClassification {
   } else if (hasHallmarkTerm) {
     scope = 'GOLD';
   }
+
+  // 3b. Generic BIS Intelligence Queries (Category-Agnostic Product Functions)
+  const isGenericStandard =
+    (norm.includes('find') && (norm.includes('standard') || norm.includes('applicable') || norm.includes('my product') || norm.includes('how do i find'))) ||
+    (norm.includes('search') && norm.includes('standard')) ||
+    (norm.includes('applicable') && norm.includes('standard')) ||
+    question.includes('मानक कैसे खोजें') ||
+    question.includes('लागू मानक') ||
+    question.includes('मानक खोज');
+
+  const isGenericRequirement =
+    (norm.includes('requirement') && (norm.includes('check') || norm.includes('applies') || norm.includes('whether') || norm.includes('mandatory'))) ||
+    norm.includes('is bis mandatory') ||
+    norm.includes('when is bis mandatory') ||
+    norm.includes('qco mandatory') ||
+    question.includes('आवश्यकता कैसे जाँचें') ||
+    question.includes('अनिवार्य आवश्यकता') ||
+    question.includes('कब अनिवार्य');
+
+  const isGenericRoadmap =
+    (norm.includes('roadmap') && (norm.includes('build') || norm.includes('compliance') || norm.includes('certification pathway') || norm.includes('how to'))) ||
+    norm.includes('certification journey') ||
+    norm.includes('compliance lifecycle') ||
+    norm.includes('certification pathway') ||
+    question.includes('रोडमैप कैसे बनाएं') ||
+    question.includes('प्रमाणन मार्ग') ||
+    question.includes('अनुपालन रोडमैप');
+
+  const isGenericTesting =
+    (norm.includes('testing') && (norm.includes('information') || norm.includes('lab') || norm.includes('how') || norm.includes('where') || norm.includes('find'))) ||
+    norm.includes('laboratory') ||
+    norm.includes('lims') ||
+    norm.includes('lrs') ||
+    question.includes('परीक्षण जानकारी') ||
+    question.includes('प्रयोगशाला') ||
+    question.includes('जाँच कहाँ');
+
+  const isGenericServices =
+    (norm.includes('service') && (norm.includes('bis') || norm.includes('verify') || norm.includes('portal') || norm.includes('what are') || norm.includes('help me'))) ||
+    norm.includes('verify a product') ||
+    norm.includes('manakonline') ||
+    norm.includes('bis care') ||
+    question.includes('सेवाएं') ||
+    question.includes('सत्यापित') ||
+    question.includes('पोर्टल');
+
+  if (isGenericStandard) return { scope: 'GENERIC_BIS', intent: 'GENERIC_FIND_STANDARD' };
+  if (isGenericRequirement) return { scope: 'GENERIC_BIS', intent: 'GENERIC_REQUIREMENT_CHECK' };
+  if (isGenericRoadmap) return { scope: 'GENERIC_BIS', intent: 'GENERIC_ROADMAP' };
+  if (isGenericTesting) return { scope: 'GENERIC_BIS', intent: 'GENERIC_TESTING_INFO' };
+  if (isGenericServices) return { scope: 'GENERIC_BIS', intent: 'GENERIC_SERVICES_OVERVIEW' };
 
   if (scope === 'NONE') {
     return { scope: 'NONE', intent: 'OUT_OF_SCOPE' };
@@ -817,6 +1117,224 @@ function getAnswer(question: string, currentLang: Language): ChatMessage {
       ],
       citation: 'Verified source not found',
       abstention: true,
+    };
+  }
+
+  // 3c. Generic BIS Platform Guidance (Category-Agnostic Product Functions)
+  if (classification.scope === 'GENERIC_BIS') {
+    if (answerLang === 'Hindi') {
+      if (classification.intent === 'GENERIC_FIND_STANDARD') {
+        return {
+          id: Date.now() + 1,
+          role: 'assistant',
+          text: 'लागू भारतीय मानक (IS) खोजने की प्रक्रिया।',
+          answerText: 'अपने उत्पाद के लिए लागू भारतीय मानक (IS) खोजने के लिए, मानकऑनलाइन (e-BIS) पर आधिकारिक BIS मानक निर्देशिका का उपयोग करें। उत्पादों को 14 तकनीकी डिवीजनों (जैसे विद्युत तकनीकी ETD, यांत्रिक MED, रासायनिक CHD, खाद्य FAD आदि) में वर्गीकृत किया जाता है। प्रत्येक मानक उत्पाद विनिर्देशों, परीक्षण विधियों, सुरक्षा सहनशीलता और अंकन आवश्यकताओं को परिभाषित करता है।',
+          evidenceTitle: 'BIS मानक निर्देशिका (मानकऑनलाइन e-BIS)',
+          evidenceIsNumber: 'Bureau of Indian Standards · Standards Catalogue',
+          evidenceUrl: MANAKONLINE_URL,
+          evidenceDetail: EVIDENCE_DATABASE['BIS_DIRECTORY'],
+          nextStep: 'उत्पाद कीवर्ड द्वारा मानक निर्देशिका में खोजें या प्रदर्शित उत्पादों (जैसे LED लैंप या स्वर्ण आभूषण) के कार्यप्रवाह देखें।',
+          nextStepUrl: MANAKONLINE_URL,
+          followUpsHi: [
+            'LED बल्ब के लिए कौन सा BIS मानक लागू होता है?',
+            'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
+            'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+          ],
+          citation: 'BIS मानक निर्देशिका · मानकऑनलाइन e-BIS',
+          sourceUrl: MANAKONLINE_URL,
+        };
+      }
+      if (classification.intent === 'GENERIC_REQUIREMENT_CHECK') {
+        return {
+          id: Date.now() + 1,
+          role: 'assistant',
+          text: 'BIS प्रमाणन अनिवार्यता की जाँच का विनियामक नियम।',
+          answerText: 'भारत में भारतीय मानक डिफ़ॉल्ट रूप से स्वैच्छिक होते हैं। कोई मानक तब अनिवार्य बनता है जब केंद्र सरकार के संबंधित मंत्रालय (जैसे DPIIT, MeitY आदि) BIS अधिनियम 2016 की धारा 16 के तहत गुणवत्ता नियंत्रण आदेश (QCO) या अनिवार्य पंजीकरण आदेश (CRO) जारी करते हैं। जब कोई उत्पाद QCO में शामिल होता है, तो वैध BIS प्रमाणन/पंजीकरण के बिना निर्माण, आयात या बिक्री कानूनन दंडनीय है।',
+          evidenceTitle: 'अनिवार्य गुणवत्ता नियंत्रण आदेश (QCO) निर्देशिका',
+          evidenceIsNumber: 'Quality Control Orders (QCO) Register · Section 16 BIS Act',
+          evidenceUrl: BIS_PORTAL_URL,
+          evidenceDetail: EVIDENCE_DATABASE['BIS_QCO_FRAMEWORK'],
+          nextStep: 'आधिकारिक BIS पोर्टल पर केंद्रीय QCO रजिस्टर में अपने उत्पाद की जाँच करें, या किसी विशिष्ट उत्पाद की अनिवार्यता पूछें।',
+          nextStepUrl: BIS_PORTAL_URL,
+          followUpsHi: [
+            'LED लैंप के लिए BIS प्रमाणन आवश्यकता क्या है?',
+            'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+            'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+          ],
+          citation: 'BIS विनियामक आदेश · QCO रजिस्ट्री',
+          sourceUrl: BIS_PORTAL_URL,
+        };
+      }
+      if (classification.intent === 'GENERIC_ROADMAP') {
+        return {
+          id: Date.now() + 1,
+          role: 'assistant',
+          text: 'साक्ष्य-आधारित BIS प्रमाणन व अनुपालन रोडमैप।',
+          answerText: 'एक मानक BIS अनुरूपता यात्रा साक्ष्य-आधारित अनुपालन चरणों का पालन करती है: 1) लागू मानक व दायरे की पहचान, 2) विनियामक स्थिति सत्यापन (स्वैच्छिक योजना-I बनाम अनिवार्य QCO बनाम योजना-II CRS), 3) BIS-मान्यता प्राप्त लैब में उत्पाद परीक्षण, 4) दस्तावेज़ व परीक्षण रिपोर्ट संकलन, और 5) ऑनलाइन पोर्टल पर आवेदन, कारखाना निरीक्षण (योजना-I) तथा लाइसेंस/पंजीकरण व मानक चिह्न प्राप्ति।',
+          evidenceTitle: 'BIS अनुरूपता मूल्यांकन ढांचा (विनियम 2018)',
+          evidenceIsNumber: 'BIS Conformity Assessment Regulations · Lifecycle Framework',
+          evidenceUrl: BIS_PORTAL_URL,
+          evidenceDetail: EVIDENCE_DATABASE['BIS_DIRECTORY'],
+          nextStep: 'प्रदर्शित 5-चरणीय अनुपालन रोडमैप देखने के लिए नीचे का बटन दबाएँ या मानकऑनलाइन पोर्टल पर आवेदन प्रक्रिया देखें।',
+          nextStepUrl: BIS_PORTAL_URL,
+          followUpsHi: [
+            'LED बल्ब BIS प्रमाणन रोडमैप देखें',
+            'परीक्षण संबंधी जानकारी कैसे प्राप्त करें?',
+            'उत्पाद सत्यापन में कौन सी BIS सेवाएं मदद कर सकती हैं?',
+          ],
+          citation: 'BIS अनुरूपता मूल्यांकन ढांचा · योजना I व II',
+          sourceUrl: BIS_PORTAL_URL,
+          roadmap: true,
+        };
+      }
+      if (classification.intent === 'GENERIC_TESTING_INFO') {
+        return {
+          id: Date.now() + 1,
+          role: 'assistant',
+          text: 'BIS अनुरूपता के लिए प्रयोगशाला परीक्षण की प्रक्रिया।',
+          answerText: 'BIS अनुरूपता मूल्यांकन के लिए उत्पाद परीक्षण विशेष रूप से BIS प्रयोगशाला मान्यता योजना (LRS) के तहत मान्यता प्राप्त प्रयोगशालाओं या BIS की केंद्रीय/क्षेत्रीय प्रयोगशालाओं में किया जाना आवश्यक है। प्रयोगशालाएं संबंधित भारतीय मानक में निर्धारित भौतिक, विद्युत, रासायनिक और टिकाऊपन मापदंडों के अनुसार नमूनों की जाँच करती हैं और आधिकारिक परीक्षण रिपोर्ट (Test Report) जारी करती हैं।',
+          evidenceTitle: 'BIS प्रयोगशाला मान्यता योजना (LRS)',
+          evidenceIsNumber: 'Laboratory Recognition Scheme (LRS) · LIMS Portal',
+          evidenceUrl: BIS_PORTAL_URL,
+          evidenceDetail: EVIDENCE_DATABASE['BIS_LRS_TESTING'],
+          nextStep: 'मान्यता प्राप्त प्रयोगशालाओं की सूची और परीक्षण मापदंड देखने के लिए BIS LIMS पोर्टल पर जाएँ।',
+          nextStepUrl: BIS_PORTAL_URL,
+          followUpsHi: [
+            'LED लैंप के लिए कौन से परीक्षण आवश्यक हैं?',
+            'मुझे BIS अनुपालन रोडमैप बनाने का तरीका बताएं।',
+            'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
+          ],
+          citation: 'BIS LRS प्रयोगशाला नेटवर्क · LIMS',
+          sourceUrl: BIS_PORTAL_URL,
+        };
+      }
+      // GENERIC_SERVICES_OVERVIEW
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'आधिकारिक BIS डिजिटल सेवाएं और सत्यापन मंच।',
+        answerText: 'भारतीय मानक ब्यूरो नागरिकों और उद्योगों के लिए चार प्रमुख डिजिटल सेवाएं संचालित करता है: 1) मानकऑनलाइन (e-BIS): मानक खोज, लाइसेंस आवेदन व नवीनीकरण पोर्टल, 2) CRS पोर्टल: इलेक्ट्रॉनिक्स व IT उत्पादों के अनिवार्य पंजीकरण का मंच, 3) BIS CARE मोबाइल ऐप: ISI मार्क लाइसेंस और 6-अंकीय हॉलमार्किंग HUID के त्वरित सत्यापन व शिकायत दर्ज करने का ऐप, और 4) अपने मानक जानें: प्रकाशित मानकों को पढ़ने की निःशुल्क सेवा।',
+        evidenceTitle: 'BIS डिजिटल सेवा तंत्र (e-BIS, CRS, BIS CARE)',
+        evidenceIsNumber: 'BIS Citizen & Industry Digital Ecosystem',
+        evidenceUrl: BIS_PORTAL_URL,
+        evidenceDetail: EVIDENCE_DATABASE['BIS_SERVICES_CITIZEN'],
+        nextStep: 'नागरिक सत्यापन के लिए BIS CARE मोबाइल ऐप डाउनलोड करें या उद्योग सेवाओं के लिए manakonline.in पर जाएँ।',
+        nextStepUrl: BIS_PORTAL_URL,
+        followUpsHi: [
+          'सोने की हॉलमार्किंग और HUID कैसे जाँचें?',
+          'मैं अपने उत्पाद के लिए लागू BIS मानक कैसे खोजूँ?',
+          'मैं कैसे जाँचूँ कि कोई BIS आवश्यकता लागू होती है?',
+        ],
+        citation: 'BIS आधिकारिक सेवा पोर्टल · e-BIS व BIS CARE',
+        sourceUrl: BIS_PORTAL_URL,
+      };
+    }
+
+    // English responses for GENERIC_BIS
+    if (classification.intent === 'GENERIC_FIND_STANDARD') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'How to discover the applicable Indian Standard for your product.',
+        answerText: 'To find the applicable Indian Standard (IS) for your product, consult the official BIS Standards Directory on Manakonline (e-BIS). Products in India are categorized under 14 technical divisions (Electrotechnical ETD, Mechanical MED, Chemical CHD, Food FAD, Metallurgical MTD, etc.) and assigned a specific standard number. Each standard defines comprehensive product specifications, safety tolerances, performance thresholds, and sampling methodologies.',
+        evidenceTitle: 'BIS Standards Directory (Manakonline e-BIS)',
+        evidenceIsNumber: 'Bureau of Indian Standards · Standards Catalogue',
+        evidenceUrl: MANAKONLINE_URL,
+        evidenceDetail: EVIDENCE_DATABASE['BIS_DIRECTORY'],
+        nextStep: 'Search your product nomenclature in the BIS Standards Directory on Manakonline, or inspect representative workflows below (such as LED lamps or Gold jewellery).',
+        nextStepUrl: MANAKONLINE_URL,
+        followUps: [
+          'Which BIS standard applies to LED bulbs?',
+          'How can I check whether a BIS requirement applies?',
+          'Show me how to build a BIS compliance roadmap.',
+        ],
+        citation: 'BIS Standards Directory · Manakonline e-BIS',
+        sourceUrl: MANAKONLINE_URL,
+      };
+    }
+    if (classification.intent === 'GENERIC_REQUIREMENT_CHECK') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'Regulatory criteria determining mandatory BIS certification.',
+        answerText: 'In India, an Indian Standard is voluntary by default unless the Central Government mandates it via a statutory Quality Control Order (QCO) or Compulsory Registration Order (CRO). Mandatory compliance is enforced under Section 16 of the BIS Act, 2016 by relevant line Ministries (such as DPIIT, MeitY, or Ministry of Consumer Affairs). Once a product is notified under a QCO or CRO, manufacturing, importing, distributing, or selling it without valid BIS certification or registration is legally prohibited.',
+        evidenceTitle: 'Mandatory Quality Control Orders (QCO) Register',
+        evidenceIsNumber: 'Quality Control Orders (QCO) Register · Section 16 BIS Act',
+        evidenceUrl: BIS_PORTAL_URL,
+        evidenceDetail: EVIDENCE_DATABASE['BIS_QCO_FRAMEWORK'],
+        nextStep: 'Check the central QCO register on the official BIS portal or ask about a specific product (e.g. "Is BIS certification required for LED lamps?").',
+        nextStepUrl: BIS_PORTAL_URL,
+        followUps: [
+          'Is BIS certification required for LED lamps?',
+          'How do I verify gold hallmarking & HUID?',
+          'Show me how to build a BIS compliance roadmap.',
+        ],
+        citation: 'BIS Regulatory Framework · QCO Register',
+        sourceUrl: BIS_PORTAL_URL,
+      };
+    }
+    if (classification.intent === 'GENERIC_ROADMAP') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'Evidence-grounded BIS compliance roadmap.',
+        answerText: 'A structured BIS conformity journey typically follows an evidence-grounded roadmap: 1) Identify Applicable Standard & Scope, 2) Verify Regulatory Scheme Applicability (Voluntary ISI Scheme I vs Mandatory QCO vs Scheme II CRS), 3) Execute Conformity Testing at a BIS-Recognized Lab, 4) Compile Technical Dossier & Portal Application (Manakonline or CRS portal), and 5) Scrutiny/Factory Audit followed by grant of license/registration and standard mark application.',
+        evidenceTitle: 'BIS Conformity Assessment Regulations (2018)',
+        evidenceIsNumber: 'BIS Conformity Assessment Regulations · Lifecycle Framework',
+        evidenceUrl: BIS_PORTAL_URL,
+        evidenceDetail: EVIDENCE_DATABASE['BIS_DIRECTORY'],
+        nextStep: 'Open the interactive 5-stage demonstration roadmap for LED lamps, or proceed to the official BIS portal to initiate an enterprise application.',
+        nextStepUrl: BIS_PORTAL_URL,
+        followUps: [
+          'Show me the BIS compliance roadmap for LED lamps.',
+          'How can I find the relevant testing information?',
+          'What BIS services can help me verify a product?',
+        ],
+        citation: 'BIS Conformity Assessment Regulations · Schemes I & II',
+        sourceUrl: BIS_PORTAL_URL,
+        roadmap: true,
+      };
+    }
+    if (classification.intent === 'GENERIC_TESTING_INFO') {
+      return {
+        id: Date.now() + 1,
+        role: 'assistant',
+        text: 'Laboratory testing requirements for BIS conformity.',
+        answerText: 'Product testing for BIS conformity assessment must be executed exclusively at testing laboratories officially recognized under the BIS Laboratory Recognition Scheme (LRS) or BIS\'s own Central and Regional Laboratories. Recognized labs evaluate product test samples against the physical, electrical, chemical, and durability parameters prescribed in the specific Indian Standard, generating the formal test report required for application.',
+        evidenceTitle: 'BIS Laboratory Recognition Scheme (LRS)',
+        evidenceIsNumber: 'Laboratory Recognition Scheme (LRS) · LIMS Portal',
+        evidenceUrl: BIS_PORTAL_URL,
+        evidenceDetail: EVIDENCE_DATABASE['BIS_LRS_TESTING'],
+        nextStep: 'Locate authorized testing facilities and test parameters on the official BIS Laboratory Information Management System (LIMS).',
+        nextStepUrl: BIS_PORTAL_URL,
+        followUps: [
+          'What testing is required under IS 16102?',
+          'Show me how to build a BIS compliance roadmap.',
+          'How do I find the applicable BIS standard for my product?',
+        ],
+        citation: 'BIS Laboratory Network · LRS & LIMS',
+        sourceUrl: BIS_PORTAL_URL,
+      };
+    }
+    // GENERIC_SERVICES_OVERVIEW
+    return {
+      id: Date.now() + 1,
+      role: 'assistant',
+      text: 'Official BIS citizen and enterprise digital services.',
+      answerText: 'The Bureau of Indian Standards operates several official digital services for citizens and enterprises: 1) Manakonline (e-BIS): Enterprise portal for standard discovery, licensing, and renewals, 2) CRS Portal: Dedicated portal for compulsory IT & electronics registration, 3) BIS CARE Mobile App: Official mobile app for citizens to verify ISI marks, authenticate 6-digit hallmarking HUIDs, and lodge complaints, and 4) Know Your Standards: Public portal to read published Indian Standards.',
+      evidenceTitle: 'BIS Digital Services Ecosystem (e-BIS, CRS, BIS CARE)',
+      evidenceIsNumber: 'BIS Citizen & Industry Digital Ecosystem',
+      evidenceUrl: BIS_PORTAL_URL,
+      evidenceDetail: EVIDENCE_DATABASE['BIS_SERVICES_CITIZEN'],
+      nextStep: 'Download the official BIS CARE mobile application from the app store or visit the official BIS portal at bis.gov.in.',
+      nextStepUrl: BIS_PORTAL_URL,
+      followUps: [
+        'How do I verify a 6-digit HUID on gold jewellery?',
+        'How do I find the applicable BIS standard for my product?',
+        'How can I check whether a BIS requirement applies?',
+      ],
+      citation: 'BIS Official Digital Services · e-BIS & BIS CARE',
+      sourceUrl: BIS_PORTAL_URL,
     };
   }
 
@@ -1064,10 +1582,26 @@ export default function ExploreScreen() {
       stageTimers.forEach(clearTimeout);
       const answer = getAnswer(trimmed, language);
       setMessages((current) => [...current, answer]);
+      addHistoryItem({
+        query: trimmed,
+        answerText: answer.answerText || answer.text,
+        citation: answer.citation,
+        sourceUrl: answer.sourceUrl,
+        language,
+        abstention: answer.abstention,
+        hinglish: answer.hinglish,
+      });
       setLoading(false);
       setLoadingStage(0);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }, 950);
+  };
+
+  const hasUserQueries = messages.some((m) => m.role === 'user') || loading;
+
+  const resetToNewSearch = () => {
+    setMessages(getSampleMessages(language));
+    setQuestion('');
   };
 
   const loadSources = async () => {
@@ -1078,21 +1612,40 @@ export default function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* ── Header ── */}
+      {/* ── Product Header ── */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
           <View style={styles.brandMark}>
-            <ShieldCheck color="#E3A62F" size={19} strokeWidth={2.5} />
+            <ShieldCheck color="#E3A62F" size={20} strokeWidth={2.5} />
           </View>
           <View>
             <Text style={styles.brand}>
               Sahayak<Text style={styles.brandAccent}>BIS</Text>
             </Text>
-            <Text style={styles.tagline}>Standards made simple</Text>
+            <Text style={styles.tagline}>
+              {language === 'Hindi'
+                ? 'BIS मानकों और सेवाओं के लिए साक्ष्य-आधारित संवादात्मक बुद्धिमत्ता'
+                : 'Evidence-grounded conversational intelligence for BIS standards & services'}
+            </Text>
           </View>
         </View>
 
         <View style={styles.headerRight}>
+          {/* New Search reset button when active in conversation */}
+          {hasUserQueries && (
+            <Pressable
+              onPress={resetToNewSearch}
+              style={styles.newSearchPill}
+              accessibilityRole="button"
+              accessibilityLabel="Start a new search"
+            >
+              <RotateCcw color="#E3A62F" size={12} />
+              <Text style={styles.newSearchPillText}>
+                {language === 'Hindi' ? 'नया प्रश्न' : 'New Search'}
+              </Text>
+            </Pressable>
+          )}
+
           {/* Language toggle */}
           <View style={styles.languagePill}>
             <Pressable
@@ -1126,101 +1679,170 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      {/* ── Pilot Scope Statement Banner ── */}
-      <View style={styles.scopeBanner}>
-        <View style={styles.scopeBadge}>
-          <Sparkles color={C.amberDark} size={12} />
-          <Text style={styles.scopeBadgeText}>
-            {language === 'Hindi' ? 'प्रायोगिक दायरा · SIH 2026' : 'PILOT SCOPE · SIH 2026'}
+      {/* ── End-to-End Workflow Visualization ── */}
+      <View style={styles.workflowStrip}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.workflowStripContent}>
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>01</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'पूछें' : 'ASK'}</Text>
+          </View>
+          <ChevronRight color="#64748B" size={11} style={styles.workflowChevron} />
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>02</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'समझें' : 'UNDERSTAND'}</Text>
+          </View>
+          <ChevronRight color="#64748B" size={11} style={styles.workflowChevron} />
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>03</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'खोजें' : 'FIND'}</Text>
+          </View>
+          <ChevronRight color="#64748B" size={11} style={styles.workflowChevron} />
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>04</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'सत्यापित करें' : 'VERIFY'}</Text>
+          </View>
+          <ChevronRight color="#64748B" size={11} style={styles.workflowChevron} />
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>05</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'मार्गदर्शन' : 'GUIDANCE'}</Text>
+          </View>
+          <ChevronRight color="#64748B" size={11} style={styles.workflowChevron} />
+          <View style={styles.workflowStep}>
+            <Text style={styles.workflowNum}>06</Text>
+            <Text style={styles.workflowLabel}>{language === 'Hindi' ? 'आधिकारिक स्रोत' : 'OFFICIAL SOURCE'}</Text>
+          </View>
+        </ScrollView>
+      </View>
+
+      {/* ── Hero Primary Ask / Search Bar (Empty Home State Only) ── */}
+      {!hasUserQueries && (
+        <View style={styles.heroAskContainer}>
+          <View style={styles.heroAskBox}>
+            <Search color={C.primary} size={18} />
+            <TextInput
+              value={question}
+              onChangeText={setQuestion}
+              onSubmitEditing={() => sendQuestion()}
+              placeholder={
+                language === 'Hindi'
+                  ? 'BIS मानकों और सेवाओं के बारे में कुछ भी पूछें…'
+                  : 'Ask anything about BIS standards & services…'
+              }
+              placeholderTextColor="#8899A6"
+              style={styles.heroAskInput}
+              returnKeyType="send"
+              maxLength={240}
+              accessibilityLabel="Primary BIS query input"
+            />
+            <Pressable
+              onPress={() => sendQuestion()}
+              style={[styles.heroAskButton, !question.trim() && styles.heroAskButtonDisabled]}
+              accessibilityRole="button"
+              accessibilityLabel="Submit question"
+            >
+              <ArrowUp color="#FFFFFF" size={17} strokeWidth={2.5} />
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* ── Core Product Capabilities ── */}
+      <View style={styles.capabilitiesContainer}>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>
+            {language === 'Hindi' ? 'उत्पाद क्षमताएं' : 'CORE PRODUCT CAPABILITIES'}
+          </Text>
+          <Text style={styles.sectionHeaderSub}>
+            {language === 'Hindi' ? 'साक्ष्य-आधारित BIS कार्यप्रवाह' : 'Evidence-Grounded BIS Workflow'}
           </Text>
         </View>
-        <Text style={styles.scopeText}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.capabilitiesScroll}>
+          {PRODUCT_CAPABILITIES.map((cap) => {
+            const Icon = cap.icon;
+            return (
+              <Pressable
+                key={cap.id}
+                onPress={() => sendQuestion(language === 'Hindi' ? cap.queryHi : cap.query)}
+                style={styles.capabilityCard}
+                accessibilityRole="button"
+                accessibilityLabel={language === 'Hindi' ? cap.labelHi : cap.label}
+              >
+                <View style={styles.capabilityIconWrap}>
+                  <Icon color={C.primary} size={15} strokeWidth={2.2} />
+                </View>
+                <Text style={styles.capabilityTitle} numberOfLines={2}>
+                  {language === 'Hindi' ? cap.labelHi : cap.label}
+                </Text>
+                <Text style={styles.capabilityDesc} numberOfLines={2}>
+                  {language === 'Hindi' ? cap.descriptionHi : cap.description}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* ── Evidence & Trust Principle ── */}
+      <View style={styles.trustCard}>
+        <View style={styles.trustCardHeader}>
+          <ShieldCheck color={C.green} size={14} strokeWidth={2.5} />
+          <Text style={styles.trustCardTitle}>
+            {language === 'Hindi' ? 'साक्ष्य-आधारित विश्वास ढांचा' : 'Evidence-Backed Trust Framework'}
+          </Text>
+        </View>
+        <Text style={styles.trustCardPrinciple}>
           {language === 'Hindi'
-            ? 'उद्योग (LED · IS 16102) और उपभोक्ता संरक्षण (सोना व चाँदी · IS 1417, IS 2112) के प्रतिनिधि मानकों का प्रदर्शन। सभी BIS मानकों के लिए विस्तार योग्य।'
-            : 'Demonstrating representative Indian Standards across Industry (LED · IS 16102) & Consumer Protection (Gold & Silver · IS 1417, IS 2112). Extensible to all BIS standards.'}
+            ? 'प्रत्येक उत्तर सत्यापित BIS मानकों, राजपत्र अधिसूचनाओं या आधिकारिक विनियामक आदेशों पर आधारित है। पर्याप्त सत्यापित साक्ष्य नहीं → कोई निश्चित दावा नहीं।'
+            : 'Every answer is grounded in verified BIS standards, gazette notifications, or official regulatory orders. No sufficient verified evidence → No definitive compliance claim.'}
         </Text>
-      </View>
-
-      {/* ── Dual-Category Intent Buttons ── */}
-      <View style={styles.intentBarContainer}>
-        {/* Industry Group */}
-        <View style={styles.intentGroup}>
-          <View style={styles.intentGroupHeader}>
-            <View style={[styles.intentCategoryDot, { backgroundColor: C.primary }]} />
-            <Text style={styles.intentGroupTitle}>
-              {language === 'Hindi' ? 'उद्योग पायलट (LED)' : 'Industry Pilot (LED)'}
-            </Text>
+        <View style={styles.trustBadgesRow}>
+          <View style={styles.trustBadge}>
+            <CheckCircle2 color={C.green} size={10} />
+            <Text style={styles.trustBadgeText}>{language === 'Hindi' ? 'राजपत्र व QCO सत्यापन' : 'Gazette & QCO Verification'}</Text>
           </View>
-          <View style={styles.intentRow}>
-            {INTENTS.filter((i) => i.category === 'Industry').map((intent) => {
-              const Icon = intent.icon;
-              return (
-                <Pressable
-                  key={intent.id}
-                  onPress={() => sendQuestion(language === 'Hindi' ? intent.queryHi : intent.query)}
-                  style={styles.intentButton}
-                  accessibilityRole="button"
-                  accessibilityLabel={language === 'Hindi' ? intent.labelHi : intent.label}
-                >
-                  <Icon color={C.primary} size={12} strokeWidth={2} />
-                  <Text style={styles.intentLabel} numberOfLines={1}>
-                    {language === 'Hindi' ? intent.labelHi : intent.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
+          <View style={styles.trustBadge}>
+            <CheckCircle2 color={C.green} size={10} />
+            <Text style={styles.trustBadgeText}>{language === 'Hindi' ? 'योजना व लैब मैपिंग' : 'Scheme & Lab Mapping'}</Text>
           </View>
-        </View>
-
-        {/* Consumer Group */}
-        <View style={styles.intentGroup}>
-          <View style={styles.intentGroupHeader}>
-            <View style={[styles.intentCategoryDot, { backgroundColor: C.gold }]} />
-            <Text style={styles.intentGroupTitle}>
-              {language === 'Hindi' ? 'उपभोक्ता पायलट (स्वर्ण व रजत)' : 'Consumer Pilot (Precious Metals)'}
-            </Text>
+          <View style={styles.trustBadge}>
+            <CheckCircle2 color={C.green} size={10} />
+            <Text style={styles.trustBadgeText}>{language === 'Hindi' ? 'सुरक्षित अपवर्जन (Safe Abstention)' : 'Safe Abstention'}</Text>
           </View>
-          <View style={styles.intentRow}>
-            {INTENTS.filter((i) => i.category === 'Consumer').map((intent) => {
-              const Icon = intent.icon;
-              return (
-                <Pressable
-                  key={intent.id}
-                  onPress={() => sendQuestion(language === 'Hindi' ? intent.queryHi : intent.query)}
-                  style={[styles.intentButton, styles.intentButtonConsumer]}
-                  accessibilityRole="button"
-                  accessibilityLabel={language === 'Hindi' ? intent.labelHi : intent.label}
-                >
-                  <Icon color={C.amberDark} size={12} strokeWidth={2} />
-                  <Text style={[styles.intentLabel, styles.intentLabelConsumer]} numberOfLines={1}>
-                    {language === 'Hindi' ? intent.labelHi : intent.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
+          <View style={styles.trustBadge}>
+            <CheckCircle2 color={C.green} size={10} />
+            <Text style={styles.trustBadgeText}>{language === 'Hindi' ? 'आधिकारिक BIS पोर्टल लिंक' : 'Official BIS Portals'}</Text>
           </View>
         </View>
       </View>
 
-      {/* ── Suggested chips ── */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.promptRow}
-      >
-        {prompts[language].map((prompt) => (
-          <Pressable
-            key={prompt}
-            onPress={() => sendQuestion(prompt)}
-            style={styles.promptChip}
-            accessibilityRole="button"
-          >
-            <Sparkles color={C.amberDark} size={13} />
-            <Text style={styles.promptText}>{prompt}</Text>
-            <ChevronRight color="#89919B" size={14} />
-          </Pressable>
-        ))}
-      </ScrollView>
+      {/* ── Suggested Questions Carousel ── */}
+      <View style={styles.suggestedSection}>
+        <View style={styles.suggestedHeaderRow}>
+          <Sparkles color={C.amberDark} size={12} />
+          <Text style={styles.suggestedHeaderTitle}>
+            {language === 'Hindi' ? 'सुझाए गए प्रश्न' : 'SUGGESTED QUESTIONS'}
+          </Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.promptRow}
+        >
+          {SUGGESTED_PROMPTS.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() => sendQuestion(language === 'Hindi' ? item.queryHi : item.query)}
+              style={styles.promptChip}
+              accessibilityRole="button"
+            >
+              <Text style={styles.promptText}>
+                {language === 'Hindi' ? item.labelHi : item.label}
+              </Text>
+              <ChevronRight color="#89919B" size={13} />
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* ── Message List ── */}
       <ScrollView
@@ -1505,51 +2127,55 @@ export default function ExploreScreen() {
         <Pressable onPress={loadSources} style={styles.sourceNotice} accessibilityRole="button">
           <ShieldCheck color={C.teal} size={16} />
           <Text style={styles.sourceNoticeText}>
-            {language === 'Hindi' ? '3 आधिकारिक BIS स्रोत जुड़े हुए हैं' : '3 official BIS sources connected'}
+            {language === 'Hindi' ? 'आधिकारिक BIS स्रोत व साक्ष्य पुस्तकालय देखें' : 'View official BIS sources & evidence library'}
           </Text>
           <ChevronRight color={C.teal} size={14} />
         </Pressable>
       </ScrollView>
 
-      {/* ── Composer ── */}
-      <View style={styles.composerWrap}>
-        <View style={styles.composer}>
-          <TextInput
-            value={question}
-            onChangeText={setQuestion}
-            onSubmitEditing={() => sendQuestion()}
-            onKeyPress={(e: any) => {
-              if (e?.nativeEvent?.key === 'Enter' && !e?.nativeEvent?.shiftKey) {
-                e?.preventDefault?.();
-                sendQuestion();
+      {/* ── Compact Follow-up Composer (Active Conversation State Only) ── */}
+      {hasUserQueries && (
+        <View style={styles.composerWrap}>
+          <View style={styles.composer}>
+            <TextInput
+              value={question}
+              onChangeText={setQuestion}
+              onSubmitEditing={() => sendQuestion()}
+              onKeyPress={(e: any) => {
+                if (e?.nativeEvent?.key === 'Enter' && !e?.nativeEvent?.shiftKey) {
+                  e?.preventDefault?.();
+                  sendQuestion();
+                }
+              }}
+              returnKeyType="send"
+              placeholder={
+                language === 'Hindi'
+                  ? 'आगे का प्रश्न पूछें…'
+                  : 'Ask a follow-up…'
               }
-            }}
-            returnKeyType="send"
-            placeholder={
-              language === 'Hindi'
-                ? 'LED बल्ब, सोना या चाँदी के मानक पूछें…'
-                : 'Ask about LED bulbs, Gold or Silver standards…'
-            }
-            placeholderTextColor="#9AA0A7"
-            style={styles.input}
-            maxLength={240}
-            accessibilityLabel="Query input"
-          />
-          <Pressable
-            onPress={() => sendQuestion()}
-            style={[styles.sendButton, !question.trim() && styles.sendDisabled]}
-            accessibilityRole="button"
-            accessibilityLabel="Send"
-          >
-            <ArrowUp color="#FFFFFF" size={19} strokeWidth={2.5} />
-          </Pressable>
+              placeholderTextColor="#9AA0A7"
+              style={styles.input}
+              maxLength={240}
+              accessibilityLabel="Follow-up query input"
+            />
+            <Pressable
+              onPress={() => sendQuestion()}
+              style={[styles.sendButton, !question.trim() && styles.sendDisabled]}
+              accessibilityRole="button"
+              accessibilityLabel="Send follow-up"
+            >
+              <ArrowUp color="#FFFFFF" size={19} strokeWidth={2.5} />
+            </Pressable>
+          </View>
+          <View style={styles.composerMetaRow}>
+            <Text style={styles.disclaimer}>
+              {language === 'Hindi'
+                ? 'साक्ष्य-आधारित संवादात्मक मार्गदर्शन · BIS ही अंतिम प्राधिकरण है'
+                : 'Evidence-grounded conversational guidance · BIS remains the authority'}
+            </Text>
+          </View>
         </View>
-        <Text style={styles.disclaimer}>
-          {language === 'Hindi'
-            ? 'SahayakBIS एक मार्गदर्शन उपकरण है · BIS प्राधिकरण बनी रहती है'
-            : 'SahayakBIS is a guidance tool · BIS remains the authority'}
-        </Text>
-      </View>
+      )}
 
       {/* ── Roadmap Modal ── */}
       <Modal
@@ -1864,6 +2490,22 @@ const styles = StyleSheet.create({
   brandAccent: { color: '#E3A62F' },
   tagline: { color: '#AFC3D6', fontSize: 10, marginTop: 1, letterSpacing: 0.3 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  newSearchPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: C.navyLight,
+    borderColor: '#E3A62F',
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  newSearchPillText: {
+    color: '#E3A62F',
+    fontSize: 10.5,
+    fontWeight: '700',
+  },
   languagePill: {
     flexDirection: 'row',
     backgroundColor: C.navyLight,
@@ -1886,109 +2528,247 @@ const styles = StyleSheet.create({
   },
   bisLinkText: { color: C.primaryLight, fontSize: 10, fontWeight: '700' },
 
-  // Scope Banner (Pilot Scope Statement)
-  scopeBanner: {
-    backgroundColor: '#EEF6FC',
+  // End-to-End Workflow Visualization
+  workflowStrip: {
+    backgroundColor: '#1E293B',
+    paddingVertical: 7,
     borderBottomWidth: 1,
-    borderBottomColor: '#D2E5F5',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
+    borderBottomColor: '#334155',
   },
-  scopeBadge: {
+  workflowStripContent: {
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    gap: 8,
+  },
+  workflowStep: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    marginBottom: 3,
+    gap: 4,
   },
-  scopeBadgeText: {
+  workflowNum: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#E3A62F',
+    letterSpacing: 0.5,
+  },
+  workflowLabel: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#CBD5E1',
+    letterSpacing: 0.5,
+  },
+  workflowChevron: {
+    opacity: 0.6,
+  },
+
+  // Hero Primary Ask / Search Bar (Visually Primary)
+  heroAskContainer: {
+    backgroundColor: C.bgSoft,
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDEAF5',
+  },
+  heroAskBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 13,
+    borderWidth: 1.5,
+    borderColor: '#0070C0',
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    gap: 8,
+    shadowColor: C.navy,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  heroAskInput: {
+    flex: 1,
+    fontSize: 13,
+    color: C.text,
+    paddingVertical: 8,
+    fontWeight: '500',
+  },
+  heroAskButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: C.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroAskButtonDisabled: {
+    backgroundColor: '#BEDAF4',
+  },
+
+  // Core Product Capabilities
+  capabilitiesContainer: {
+    backgroundColor: C.bgSoft,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDEAF5',
+    paddingVertical: 10,
+    gap: 8,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+  },
+  sectionHeaderTitle: {
     color: C.navy,
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.6,
-  },
-  scopeText: {
-    color: '#2A4E6F',
-    fontSize: 11,
-    lineHeight: 15.5,
-  },
-
-  // Dual-Category Intent Bar
-  intentBarContainer: {
-    backgroundColor: C.bgSoft,
-    borderBottomWidth: 1,
-    borderBottomColor: '#DDEAF5',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-  },
-  intentGroup: {
-    gap: 5,
-  },
-  intentGroupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  intentCategoryDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  intentGroupTitle: {
-    color: C.navy,
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
-  intentRow: {
-    flexDirection: 'row',
-    gap: 6,
+  sectionHeaderSub: {
+    color: C.muted,
+    fontSize: 9.5,
+    fontWeight: '600',
   },
-  intentButton: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 8,
-    paddingHorizontal: 3,
+  capabilitiesScroll: {
+    paddingHorizontal: 14,
+    paddingRight: 20,
+    gap: 8,
+  },
+  capabilityCard: {
+    width: 168,
+    minHeight: 112,
     backgroundColor: C.bg,
-    borderRadius: 9,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: C.border,
+    padding: 11,
+    gap: 5,
     shadowColor: C.navy,
     shadowOpacity: 0.04,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
-  intentButtonConsumer: {
-    borderColor: '#E8D29F',
-    backgroundColor: '#FCFAF5',
+  capabilityIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    backgroundColor: '#EEF6FC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
   },
-  intentLabel: { color: C.primaryDark, fontSize: 9.5, fontWeight: '700', textAlign: 'center' },
-  intentLabelConsumer: { color: C.amberDark },
+  capabilityTitle: {
+    color: C.navy,
+    fontSize: 11.5,
+    fontWeight: '800',
+    lineHeight: 15.5,
+    minHeight: 31,
+  },
+  capabilityDesc: {
+    color: C.muted,
+    fontSize: 9.5,
+    lineHeight: 13,
+  },
 
-  // Suggested prompts
-  promptRow: { gap: 7, paddingHorizontal: 12, paddingVertical: 9 },
+  // Evidence & Trust Principle Card
+  trustCard: {
+    backgroundColor: '#F8FAFC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 5,
+  },
+  trustCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  trustCardTitle: {
+    color: C.navy,
+    fontSize: 10.5,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  trustCardPrinciple: {
+    color: '#475569',
+    fontSize: 10,
+    lineHeight: 14.5,
+    fontStyle: 'italic',
+  },
+  trustBadgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 2,
+  },
+  trustBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  trustBadgeText: {
+    color: '#065F46',
+    fontSize: 9,
+    fontWeight: '700',
+  },
+
+  // Suggested Questions Section
+  suggestedSection: {
+    backgroundColor: '#FAFCFE',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2EAF2',
+    paddingVertical: 8,
+    gap: 6,
+  },
+  suggestedHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 14,
+  },
+  suggestedHeaderTitle: {
+    color: '#475569',
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
+  promptRow: {
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingRight: 24, // Generous padding so chips do not abruptly clip
+  },
   promptChip: {
     backgroundColor: C.bg,
-    borderColor: C.border,
+    borderColor: '#CBD5E1',
     borderWidth: 1,
     borderRadius: 16,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 7,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
     shadowColor: C.navy,
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
-  promptText: { color: '#334657', fontWeight: '700', fontSize: 11.5 },
+  promptText: {
+    color: C.navy,
+    fontWeight: '700',
+    fontSize: 11,
+  },
 
   // Messages
   content: { paddingHorizontal: 14, paddingBottom: 24, paddingTop: 6 },
@@ -2506,6 +3286,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sendDisabled: { opacity: 0.4 },
+  composerMetaRow: {
+    marginTop: 4,
+    alignItems: 'center',
+  },
   disclaimer: {
     color: '#9BA1A5',
     fontSize: 10,
